@@ -27,8 +27,8 @@ export class AgencyService {
     return res.id;
   }
 
-  findAll() {
-    return `This action returns all agency`;
+  async findAll() {
+    return await this.agenceRepository.find();
   }
 
   findOne(id: number) {
@@ -56,8 +56,8 @@ export class AgencyService {
     return await this.findById(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} agency`;
+  async remove(id: number) {
+    return await this.agenceRepository.delete(id);
   }
 
   async findById(id: number) {

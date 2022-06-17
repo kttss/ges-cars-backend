@@ -58,6 +58,10 @@ export class AgencyController {
   }
 
   @Delete(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'delete agence by ID',
+  })
   remove(@Param('id') id: string) {
     return this.agencyService.remove(+id);
   }
