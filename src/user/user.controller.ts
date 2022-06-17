@@ -41,6 +41,11 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('load')
+  loadData() {
+    return this.userService.loadMockData();
+  }
+
   @Get(':id')
   @ApiParam({
     name: 'id',

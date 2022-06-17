@@ -13,6 +13,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { RoleEnum } from './enums/role.enum';
+import { users } from '../mock/user';
 
 @Injectable()
 export class UserService {
@@ -56,6 +57,7 @@ export class UserService {
   }
 
   async findByEmail(email: string) {
+    console.log('email', email);
     return await this.usersRepository.findOne({
       where: [{ email: email }],
     });
@@ -73,5 +75,12 @@ export class UserService {
 
   async remove(id: number) {
     return await this.usersRepository.delete(id);
+  }
+
+  loadMockData() {
+    const usersList = users;
+    usersList.forEach((u: CreateUserDto) => {
+      this.create(u);
+    });
   }
 }
