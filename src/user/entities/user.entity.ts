@@ -57,6 +57,10 @@ export class User {
   @IsNotEmpty()
   telephone: string;
 
-  @ManyToMany(() => Agency, (agency) => agency.users)
+  @ManyToMany(() => Agency, (agency) => agency.users, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   agencys: Agency[];
 }

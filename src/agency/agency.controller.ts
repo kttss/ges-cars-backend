@@ -8,7 +8,12 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiParam,
+} from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AgencyService } from './agency.service';
@@ -16,13 +21,15 @@ import { CreateAgencyDto } from './dto/create-agency.dto';
 import { UpdateAgencyDto } from './dto/update-agency.dto';
 
 @Controller('agency')
-@Controller('Agency')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class AgencyController {
   constructor(private readonly agencyService: AgencyService) {}
 
   @Post()
+  @ApiCreatedResponse({
+    description: 'The agencey has been successfully created.',
+  })
   create(@Body() createAgencyDto: CreateAgencyDto) {
     return this.agencyService.create(createAgencyDto);
   }
@@ -38,6 +45,14 @@ export class AgencyController {
   }
 
   @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'Update user by ID',
+  })
+  @ApiBody({
+    description: 'user',
+    type: UpdateAgencyDto,
+  })
   update(@Param('id') id: string, @Body() updateAgencyDto: UpdateAgencyDto) {
     return this.agencyService.update(+id, updateAgencyDto);
   }

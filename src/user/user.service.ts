@@ -77,6 +77,13 @@ export class UserService {
     return await this.usersRepository.delete(id);
   }
 
+  async getUsersByIds(ids: number[]) {
+    return await this.usersRepository
+      .createQueryBuilder('user')
+      .where('user.id IN (:...ids)', { ids: [...ids] })
+      .getMany();
+  }
+
   loadMockData() {
     const usersList = users;
     usersList.forEach((u: CreateUserDto) => {
