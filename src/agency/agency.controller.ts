@@ -30,6 +30,10 @@ export class AgencyController {
   @ApiCreatedResponse({
     description: 'The agencey has been successfully created.',
   })
+  @ApiBody({
+    description: 'agence',
+    type: CreateAgencyDto,
+  })
   create(@Body() createAgencyDto: CreateAgencyDto) {
     return this.agencyService.create(createAgencyDto);
   }

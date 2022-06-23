@@ -12,7 +12,7 @@ export class Email {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Agency)
+  @ManyToOne(() => Agency, (agence) => agence.emails)
   @JoinTable()
   agence: Agency;
 
