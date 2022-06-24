@@ -2,6 +2,7 @@ import { IsString, MaxLength } from 'class-validator';
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
@@ -10,6 +11,7 @@ import {
 
 import { User } from '../../user/entities/user.entity';
 import { Email } from './email.entity';
+import { Telephone } from './telephone..entity';
 
 @Entity()
 export class Agency {
@@ -37,7 +39,9 @@ export class Agency {
   @JoinTable()
   users: User[];
 
-  @OneToMany(() => Email, (email) => email.id)
-  @JoinTable()
+  @OneToMany(() => Email, (email) => email.agence)
   emails: Email[];
+
+  @OneToMany(() => Telephone, (telephone) => telephone.agence)
+  telephones: Telephone[];
 }

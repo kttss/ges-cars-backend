@@ -6,9 +6,10 @@ import { AgencyController } from './agency.controller';
 import { Agency } from './entities/agency.entity';
 import { Email } from './entities/email.entity';
 import { UserModule } from '../user/user.module';
+import { Telephone } from './entities/telephone..entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Agency, Email]), UserModule],
+  imports: [TypeOrmModule.forFeature([Agency, Email, Telephone]), UserModule],
   controllers: [AgencyController],
   providers: [AgencyService],
 })

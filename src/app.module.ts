@@ -12,6 +12,7 @@ import { AgencyModule } from './agency/agency.module';
 import { Agency } from './agency/entities/agency.entity';
 import { Client } from './client/entities/client.entity';
 import { Email } from './agency/entities/email.entity';
+import { Telephone } from './agency/entities/telephone..entity';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -21,7 +22,7 @@ import { Email } from './agency/entities/email.entity';
       username: 'root',
       password: '',
       database: 'cars',
-      entities: [User, Agency, Client, Email],
+      entities: [User, Agency, Client, Email, Telephone],
       synchronize: true,
       dropSchema: false,
     }),

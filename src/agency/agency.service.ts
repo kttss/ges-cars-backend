@@ -30,7 +30,7 @@ export class AgencyService {
 
     emails.forEach((row) => {
       const email = new Email();
-      email.email = row;
+      email.value = row;
       email.agence = res;
       this.emailRepository.save(email);
     });
@@ -42,7 +42,13 @@ export class AgencyService {
     const agences = await this.agenceRepository
       .createQueryBuilder('agency')
       .leftJoinAndSelect('agency.users', 'user')
+      .leftJoinAndSelect('agency.emails', 'email')
+      .leftJoinAndSelect('agency.telephones', 'telephone')
       .getMany();
+
+    // return await this.agenceRepository.find({
+    //   relations: ['users', 'emails'],
+    // });
 
     return agences;
   }
@@ -73,7 +79,7 @@ export class AgencyService {
 
     emails.forEach((row) => {
       const email = new Email();
-      email.email = row;
+      email.value = row;
       email.agence = agence;
       this.emailRepository.save(email);
     });
