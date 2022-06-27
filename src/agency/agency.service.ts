@@ -1,22 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { AGENCES } from '../mock/agence';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 import { CreateAgencyDto } from './dto/create-agency.dto';
 import { UpdateAgencyDto } from './dto/update-agency.dto';
 import { Agency } from './entities/agency.entity';
 import { Email } from './entities/email.entity';
+import { Telephone } from './entities/telephone..entity';
 
 @Injectable()
 export class AgencyService {
   constructor(
     @InjectRepository(Agency) private agenceRepository: Repository<Agency>,
     @InjectRepository(Email) private emailRepository: Repository<Email>,
+    @InjectRepository(Telephone)
+    private telphoneRepository: Repository<Telephone>,
     private readonly userService: UserService,
   ) {}
   async create(createAgencyDto: CreateAgencyDto) {
-    const { name, description, adresse, logo, users, emails } = createAgencyDto;
+    const { name, description, adresse, logo, users, emails, telephones } =
+      createAgencyDto;
     const agence: Agency = new Agency();
     agence.name = name;
     agence.description = description;
@@ -33,6 +38,13 @@ export class AgencyService {
       email.value = row;
       email.agence = res;
       this.emailRepository.save(email);
+    });
+
+    telephones.forEach((row) => {
+      const tel = new Telephone();
+      tel.value = row;
+      tel.agence = res;
+      this.telphoneRepository.save(tel);
     });
 
     return res.id;
@@ -98,6 +110,13 @@ export class AgencyService {
   async findById(id: number) {
     return await this.agenceRepository.findOne({
       where: [{ id: id }],
+    });
+  }
+
+  loadMockData() {
+    const agenceList = AGENCES;
+    agenceList.forEach((a: CreateAgencyDto) => {
+      this.create(a);
     });
   }
 }

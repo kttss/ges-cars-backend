@@ -43,6 +43,11 @@ export class AgencyController {
     return this.agencyService.findAll();
   }
 
+  @Get('load')
+  loadData() {
+    return this.agencyService.loadMockData();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.agencyService.findOne(+id);

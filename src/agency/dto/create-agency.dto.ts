@@ -26,4 +26,8 @@ export class CreateAgencyDto {
   @ApiProperty()
   @IsArray()
   emails: string[];
+
+  @ApiProperty()
+  @IsArray()
+  telephones: string[];
 }

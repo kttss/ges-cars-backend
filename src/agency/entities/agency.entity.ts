@@ -35,13 +35,22 @@ export class Agency {
   @IsString()
   logo: string;
 
-  @ManyToMany(() => User, (user) => user.agencys)
+  @ManyToMany(() => User, (user) => user.agencys, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinTable()
   users: User[];
 
-  @OneToMany(() => Email, (email) => email.agence)
+  @OneToMany(() => Email, (email) => email.agence, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   emails: Email[];
 
-  @OneToMany(() => Telephone, (telephone) => telephone.agence)
+  @OneToMany(() => Telephone, (telephone) => telephone.agence, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   telephones: Telephone[];
 }

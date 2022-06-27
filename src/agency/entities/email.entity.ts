@@ -6,7 +6,10 @@ export class Email {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Agency, (agence) => agence.emails)
+  @ManyToOne(() => Agency, (agence) => agence.emails, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   agence: Agency;
 
   @Column()
