@@ -30,4 +30,8 @@ export class CreateAgencyDto {
   @ApiProperty()
   @IsArray()
   telephones: string[];
+
+  @ApiProperty()
+  @IsArray()
+  faxs: string[];
 }

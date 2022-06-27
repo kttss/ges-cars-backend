@@ -8,6 +8,7 @@ import { CreateAgencyDto } from './dto/create-agency.dto';
 import { UpdateAgencyDto } from './dto/update-agency.dto';
 import { Agency } from './entities/agency.entity';
 import { Email } from './entities/email.entity';
+import { Fax } from './entities/fax.entity';
 import { Telephone } from './entities/telephone..entity';
 
 @Injectable()
@@ -17,11 +18,20 @@ export class AgencyService {
     @InjectRepository(Email) private emailRepository: Repository<Email>,
     @InjectRepository(Telephone)
     private telphoneRepository: Repository<Telephone>,
+    @InjectRepository(Fax) private faxRepository: Repository<Fax>,
     private readonly userService: UserService,
   ) {}
   async create(createAgencyDto: CreateAgencyDto) {
-    const { name, description, adresse, logo, users, emails, telephones } =
-      createAgencyDto;
+    const {
+      name,
+      description,
+      adresse,
+      logo,
+      users,
+      emails,
+      telephones,
+      faxs,
+    } = createAgencyDto;
     const agence: Agency = new Agency();
     agence.name = name;
     agence.description = description;
@@ -45,6 +55,13 @@ export class AgencyService {
       tel.value = row;
       tel.agence = res;
       this.telphoneRepository.save(tel);
+    });
+
+    faxs.forEach((row) => {
+      const fax = new Telephone();
+      fax.value = row;
+      fax.agence = res;
+      this.faxRepository.save(fax);
     });
 
     return res.id;

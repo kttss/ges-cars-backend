@@ -7,9 +7,13 @@ import { Agency } from './entities/agency.entity';
 import { Email } from './entities/email.entity';
 import { UserModule } from '../user/user.module';
 import { Telephone } from './entities/telephone..entity';
+import { Fax } from './entities/fax.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Agency, Email, Telephone]), UserModule],
+  imports: [
+    TypeOrmModule.forFeature([Agency, Email, Telephone, Fax]),
+    UserModule,
+  ],
   controllers: [AgencyController],
   providers: [AgencyService],
 })

@@ -11,6 +11,7 @@ import {
 
 import { User } from '../../user/entities/user.entity';
 import { Email } from './email.entity';
+import { Fax } from './fax.entity';
 import { Telephone } from './telephone..entity';
 
 @Entity()
@@ -53,4 +54,10 @@ export class Agency {
     onUpdate: 'CASCADE',
   })
   telephones: Telephone[];
+
+  @OneToMany(() => Fax, (fax) => fax.agence, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  faxs: Fax[];
 }
