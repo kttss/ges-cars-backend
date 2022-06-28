@@ -27,6 +27,11 @@ export class ClientController {
     return this.clientService.findAll();
   }
 
+  @Get('load')
+  loadData() {
+    return this.clientService.loadMockData();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.clientService.findOne(+id);

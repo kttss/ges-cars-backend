@@ -23,7 +23,7 @@ import { Fax } from './agency/entities/fax.entity';
       username: 'root',
       password: '',
       database: 'cars',
-      entities: [User, Agency, Client, Email, Telephone, Fax],
+      entities: [User, Agency, Client, Email, Telephone, Fax, Client],
       synchronize: true,
       dropSchema: false,
     }),
