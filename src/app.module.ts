@@ -14,6 +14,8 @@ import { Client } from './client/entities/client.entity';
 import { Email } from './agency/entities/email.entity';
 import { Telephone } from './agency/entities/telephone..entity';
 import { Fax } from './agency/entities/fax.entity';
+import { Car } from './car/entities/car.entity';
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -23,7 +25,7 @@ import { Fax } from './agency/entities/fax.entity';
       username: 'root',
       password: '',
       database: 'cars',
-      entities: [User, Agency, Client, Email, Telephone, Fax, Client],
+      entities: [User, Agency, Client, Email, Telephone, Fax, Client, Car],
       synchronize: true,
       dropSchema: false,
     }),

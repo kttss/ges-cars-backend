@@ -31,6 +31,11 @@ export class CarController {
     return this.carService.findAll();
   }
 
+  @Get('load')
+  loadData() {
+    return this.carService.loadMockData();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.carService.findOne(+id);
