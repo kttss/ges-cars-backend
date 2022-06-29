@@ -15,8 +15,8 @@ import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 
 @Controller('car')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
+// @UseGuards(JwtAuthGuard)
+// @ApiBearerAuth()
 @ApiTags('cars')
 export class CarController {
   constructor(private readonly carService: CarService) {}

@@ -1,8 +1,16 @@
 import { IsEnum, IsString } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { CarStatutEnum } from '../enums/car-statut.enum';
 import { carburantEnum } from '../enums/carburant.enum';
+import { Document } from './document.entity';
 
 @Entity()
 export class Car {
@@ -32,4 +40,24 @@ export class Car {
   @Column()
   @IsString()
   description: string;
+
+  @OneToOne(() => Document, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn()
+  carteGrise: Document;
+
+  @OneToOne(() => Document, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn()
+  autorisationCirculation: Document;
+
+  @OneToOne(() => Document, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn()
+  assurance: Document;
+
+  @OneToOne(() => Document, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn()
+  vignette: Document;
+
+  @OneToOne(() => Document, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn()
+  visite: Document;
 }

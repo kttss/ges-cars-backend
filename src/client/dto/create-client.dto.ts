@@ -4,7 +4,7 @@ import { IsDateString, IsString } from 'class-validator';
 export class CreateClientDto {
   @ApiProperty()
   @IsString()
-  fistname: string;
+  firstname: string;
 
   @ApiProperty()
   @IsString()
@@ -19,7 +19,7 @@ export class CreateClientDto {
   telephone: string;
 
   @ApiProperty()
-  @IsDateString()
+  //   @IsDateString()
   birthday: string;
 
   @ApiProperty()
@@ -39,6 +39,6 @@ export class CreateClientDto {
   villePermis: string;
 
   @ApiProperty()
-  @IsDateString()
+  //   @IsDateString()
   datePermis: string;
 }

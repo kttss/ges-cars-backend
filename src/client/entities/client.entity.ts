@@ -8,7 +8,7 @@ export class Client {
 
   @Column()
   @IsString()
-  fistname: string;
+  firstname: string;
 
   @Column()
   @IsString()

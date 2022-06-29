@@ -14,7 +14,7 @@ export class ClientService {
 
   async create(createClientDto: CreateClientDto) {
     const {
-      fistname,
+      firstname,
       adresse,
       birthday,
       lastname,
@@ -29,9 +29,9 @@ export class ClientService {
     const client = new Client();
     client.adresse = adresse;
     client.lastname = lastname;
-    client.fistname = fistname;
+    client.firstname = firstname;
     client.telephone = telephone;
-    client.lieuNaissance = lieuNaissance;
+    // client.lieuNaissance = lieuNaissance;
     client.cin = cin;
     client.villeCin = villeCin;
     client.villePermis = villePermis;
@@ -43,7 +43,7 @@ export class ClientService {
   }
 
   findAll() {
-    return `This action returns all client`;
+    return this.clientRepository.find();
   }
 
   findOne(id: number) {

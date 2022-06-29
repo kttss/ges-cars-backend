@@ -1,6 +1,6 @@
 export const ClIENTS = [
   {
-    fistname: 'Peggy',
+    firstname: 'Peggy',
     lastname: 'W. Pruett',
     adresse: '2414 Black Stallion Road',
     telephone: '0645678967',
@@ -12,7 +12,7 @@ export const ClIENTS = [
     datePermis: '12/12/2018',
   },
   {
-    fistname: 'Barbra',
+    firstname: 'Barbra',
     lastname: 'R. Mullett',
     adresse: '4658 Lake Road',
     telephone: '0698567383',
@@ -24,7 +24,7 @@ export const ClIENTS = [
     datePermis: '12/12/2017',
   },
   {
-    fistname: 'Jack',
+    firstname: 'Jack',
     lastname: 'Turner',
     adresse: '164 Tori Lane',
     telephone: '0698567383',
@@ -36,7 +36,7 @@ export const ClIENTS = [
     datePermis: '12/12/2016',
   },
   {
-    fistname: 'Mary',
+    firstname: 'Mary',
     lastname: 'Turner',
     adresse: '164 Tori Lane',
     telephone: '0678983767',
@@ -48,7 +48,7 @@ export const ClIENTS = [
     datePermis: '12/12/2016',
   },
   {
-    fistname: 'Venessa',
+    firstname: 'Venessa',
     lastname: 'J. Allen',
     adresse: '105 Alexander Drive',
     telephone: '0667899383',
