@@ -19,8 +19,8 @@ export class CreateClientDto {
   telephone: string;
 
   @ApiProperty()
-  //   @IsDateString()
-  birthday: string;
+  @IsDateString()
+  birthday: Date;
 
   @ApiProperty()
   @IsString()
@@ -39,6 +39,6 @@ export class CreateClientDto {
   villePermis: string;
 
   @ApiProperty()
-  //   @IsDateString()
-  datePermis: string;
+  @IsDateString()
+  datePermis: Date;
 }

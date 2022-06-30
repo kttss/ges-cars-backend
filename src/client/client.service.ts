@@ -31,12 +31,12 @@ export class ClientService {
     client.lastname = lastname;
     client.firstname = firstname;
     client.telephone = telephone;
-    // client.lieuNaissance = lieuNaissance;
+    client.lieuNaissance = lieuNaissance;
     client.cin = cin;
     client.villeCin = villeCin;
     client.villePermis = villePermis;
-    // client.datePermis = datePermis;
-    // client.birthday = birthday;
+    client.datePermis = datePermis;
+    client.birthday = birthday;
     const res = await this.clientRepository.save(client);
 
     return res.id;
