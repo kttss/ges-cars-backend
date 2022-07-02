@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  HttpException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -22,26 +23,30 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { firstname, lastname, password, email, telephone, role } =
-      createUserDto;
-    const alreadyExist = await this.findByEmail(email);
+    try {
+      const { firstname, lastname, password, email, telephone, role } =
+        createUserDto;
+      const alreadyExist = await this.findByEmail(email);
 
-    const salt = await bcrypt.genSalt();
-    const passwordHash = await bcrypt.hash(password, salt);
+      const salt = await bcrypt.genSalt();
+      const passwordHash = await bcrypt.hash(password, salt);
 
-    if (!alreadyExist) {
-      const user: User = new User();
-      user.firstname = firstname;
-      user.lastname = lastname;
-      user.email = email;
-      user.password = passwordHash;
-      user.telephone = telephone;
-      user.role = role;
+      if (!alreadyExist) {
+        const user: User = new User();
+        user.firstname = firstname;
+        user.lastname = lastname;
+        user.email = email;
+        user.password = passwordHash;
+        user.telephone = telephone;
+        user.role = role;
 
-      const res = await this.usersRepository.save(user);
-      return res.id;
-    } else {
-      return new BadRequestException('email already exist');
+        const res = await this.usersRepository.save(user);
+        return res.id;
+      } else {
+        throw new BadRequestException('email already exist');
+      }
+    } catch (error) {
+      throw new HttpException(error, 400);
     }
   }
 
@@ -63,13 +68,28 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
+    const { firstname, lastname, password, email, telephone, role } =
+      updateUserDto;
     const user = await this.findOne(id);
 
     if (!user) {
       throw new NotFoundException('User is not found');
     }
-    await this.usersRepository.update(id, updateUserDto);
-    return await this.findOne(id);
+    user.firstname = firstname;
+    user.lastname = lastname;
+
+    user.telephone = telephone;
+    user.role = role;
+    user.email = email;
+
+    if (password) {
+      const salt = await bcrypt.genSalt();
+      const passwordHashed = await bcrypt.hash(password, salt);
+      user.password = passwordHashed;
+    }
+
+    const res = await this.usersRepository.save(user);
+    return res;
   }
 
   async remove(id: number) {
