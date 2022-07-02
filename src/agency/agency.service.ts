@@ -73,6 +73,7 @@ export class AgencyService {
       .leftJoinAndSelect('agency.users', 'user')
       .leftJoinAndSelect('agency.emails', 'email')
       .leftJoinAndSelect('agency.telephones', 'telephone')
+      .leftJoinAndSelect('agency.faxs', 'fax')
       .getMany();
 
     // return await this.agenceRepository.find({
@@ -82,12 +83,28 @@ export class AgencyService {
     return agences;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} agency`;
+  async findOne(id: number) {
+    return await this.agenceRepository
+      .createQueryBuilder('agency')
+      .leftJoinAndSelect('agency.users', 'user')
+      .leftJoinAndSelect('agency.emails', 'email')
+      .leftJoinAndSelect('agency.telephones', 'telephone')
+      .leftJoinAndSelect('agency.faxs', 'fax')
+      .where({ id: id })
+      .getOne();
   }
 
   async update(id: number, updateAgencyDto: UpdateAgencyDto) {
-    const { name, description, adresse, logo, users, emails } = updateAgencyDto;
+    const {
+      name,
+      description,
+      adresse,
+      logo,
+      users,
+      emails,
+      telephones,
+      faxs,
+    } = updateAgencyDto;
 
     const agence = await this.findById(id);
 
@@ -111,6 +128,34 @@ export class AgencyService {
       email.value = row;
       email.agence = agence;
       this.emailRepository.save(email);
+    });
+
+    this.telphoneRepository
+      .createQueryBuilder()
+      .delete()
+      .from(Telephone)
+      .where('telephone.agenceId = :id', { id: id })
+      .execute();
+
+    telephones.forEach((row) => {
+      const tel = new Telephone();
+      tel.value = row;
+      tel.agence = agence;
+      this.telphoneRepository.save(tel);
+    });
+
+    this.faxRepository
+      .createQueryBuilder()
+      .delete()
+      .from(Fax)
+      .where('fax.agenceId = :id', { id: id })
+      .execute();
+
+    faxs.forEach((row) => {
+      const fax = new Telephone();
+      fax.value = row;
+      fax.agence = agence;
+      this.faxRepository.save(fax);
     });
 
     const result = await this.userService.getUsersByIds(users);
