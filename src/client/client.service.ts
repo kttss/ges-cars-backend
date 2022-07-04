@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ClIENTS } from '../mock/client';
@@ -46,12 +46,44 @@ export class ClientService {
     return this.clientRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} client`;
+  async findOne(id: number) {
+    return await this.clientRepository.findOne({
+      where: [{ id: id }],
+    });
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
+  async update(id: number, updateClientDto: UpdateClientDto) {
+    const {
+      firstname,
+      adresse,
+      birthday,
+      lastname,
+      telephone,
+      lieuNaissance,
+      cin,
+      villeCin,
+      villePermis,
+      datePermis,
+    } = updateClientDto;
+
+    const client = await this.findOne(id);
+
+    if (!client) {
+      throw new NotFoundException('Client is not found');
+    }
+
+    client.firstname = firstname;
+    client.adresse = adresse;
+    client.birthday = birthday;
+    client.lastname = lastname;
+    client.telephone = telephone;
+    client.lieuNaissance = lieuNaissance;
+    client.cin = cin;
+    client.villeCin = villeCin;
+    client.villePermis = villePermis;
+    client.datePermis = datePermis;
+    await this.clientRepository.save(client);
+    return client;
   }
 
   remove(id: number) {
