@@ -10,6 +10,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Client } from '../../client/entities/client.entity';
 import { Car } from './car.entity';
 import { File } from './file.entity';
 
@@ -36,6 +37,13 @@ export class Document {
   //   @OneToOne(() => Car, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   //   @JoinColumn()
   //   autorisationCirculation: Car;
+
+  @ManyToOne(() => Client, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn()
+  client: Client;
 
   @ManyToOne(() => Car, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn()

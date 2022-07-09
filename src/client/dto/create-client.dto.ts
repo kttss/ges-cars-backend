@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsString } from 'class-validator';
+import { IsArray, IsDateString, IsString } from 'class-validator';
 
 export class CreateClientDto {
   @ApiProperty()
@@ -41,4 +41,12 @@ export class CreateClientDto {
   @ApiProperty()
   @IsDateString()
   datePermis: Date;
+
+  @ApiProperty()
+  @IsArray()
+  cinImages: string[];
+
+  @ApiProperty()
+  @IsArray()
+  permisImages: string[];
 }

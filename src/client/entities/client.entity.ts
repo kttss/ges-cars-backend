@@ -1,5 +1,12 @@
 import { IsDateString, IsString } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Document } from '../../car/entities/document.entity';
 
 @Entity()
 export class Client {
@@ -45,4 +52,18 @@ export class Client {
   @Column()
   @IsDateString()
   datePermis: Date;
+
+  @OneToOne(() => Document, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn()
+  cinFiles: Document;
+
+  @OneToOne(() => Document, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn()
+  permisFiles: Document;
 }

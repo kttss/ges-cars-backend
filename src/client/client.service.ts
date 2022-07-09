@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Document } from '../car/entities/document.entity';
+import { File } from '../car/entities/file.entity';
 import { ClIENTS } from '../mock/client';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
@@ -10,6 +12,9 @@ import { Client } from './entities/client.entity';
 export class ClientService {
   constructor(
     @InjectRepository(Client) private clientRepository: Repository<Client>,
+    @InjectRepository(Document)
+    private documentRepository: Repository<Document>,
+    @InjectRepository(File) private fileRepository: Repository<File>,
   ) {}
 
   async create(createClientDto: CreateClientDto) {
@@ -24,6 +29,8 @@ export class ClientService {
       villeCin,
       villePermis,
       datePermis,
+      cinImages,
+      permisImages,
     } = createClientDto;
 
     const client = new Client();
@@ -37,8 +44,38 @@ export class ClientService {
     client.villePermis = villePermis;
     client.datePermis = datePermis;
     client.birthday = birthday;
+
     const res = await this.clientRepository.save(client);
 
+    const fileCinList = [];
+    const cindoc = new Document();
+
+    cindoc.DateExpiration = null;
+    cindoc.client = client;
+    cinImages.forEach((f) => {
+      const file = new File();
+      file.path = f;
+      fileCinList.push(file);
+    });
+    await this.fileRepository.save([...fileCinList]);
+    cindoc.files = [...fileCinList];
+    await this.documentRepository.save(cindoc);
+    client.cinFiles = cindoc;
+    const filePermisList = [];
+    const permisdoc = new Document();
+
+    permisdoc.DateExpiration = null;
+    permisdoc.client = client;
+    permisImages.forEach((f) => {
+      const file = new File();
+      file.path = f;
+      filePermisList.push(file);
+    });
+    await this.fileRepository.save([...filePermisList]);
+    permisdoc.files = [...filePermisList];
+    await this.documentRepository.save(permisdoc);
+    client.permisFiles = permisdoc;
+    await this.clientRepository.save(client);
     return res.id;
   }
 
