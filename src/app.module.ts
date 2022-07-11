@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { User } from './user/entities/user.entity';
@@ -18,6 +19,7 @@ import { Car } from './car/entities/car.entity';
 import { Document } from './car/entities/document.entity';
 import { File } from './car/entities/file.entity';
 import { UploadModule } from './upload/upload.module';
+import { Contrat } from './contrat/entities/contrat.entity';
 
 @Module({
   imports: [
@@ -39,6 +41,7 @@ import { UploadModule } from './upload/upload.module';
         Car,
         Document,
         File,
+        Contrat,
       ],
       synchronize: true,
       dropSchema: false,

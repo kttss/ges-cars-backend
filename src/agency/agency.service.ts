@@ -83,7 +83,6 @@ export class AgencyService {
     return agences;
   }
   async findAllByAdmin(id: number) {
-    console.log('ccc');
     const agences = await this.agenceRepository
       .createQueryBuilder('agency')
       .leftJoinAndSelect('agency.users', 'user')

@@ -3,10 +3,13 @@ import {
   Column,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import { Document } from '../../car/entities/document.entity';
+import { Contrat } from '../../contrat/entities/contrat.entity';
 
 @Entity()
 export class Client {
@@ -66,4 +69,10 @@ export class Client {
   })
   @JoinColumn()
   permisFiles: Document;
+
+  @OneToMany(() => Contrat, (contrat) => contrat.client, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  contrats: Contrat[];
 }

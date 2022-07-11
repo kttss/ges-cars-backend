@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Car } from '../../car/entities/car.entity';
+import { Contrat } from '../../contrat/entities/contrat.entity';
 
 import { User } from '../../user/entities/user.entity';
 import { Email } from './email.entity';
@@ -67,4 +68,10 @@ export class Agency {
     onUpdate: 'CASCADE',
   })
   faxs: Fax[];
+
+  @OneToMany(() => Contrat, (contrat) => contrat.agence, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  contrats: Contrat[];
 }

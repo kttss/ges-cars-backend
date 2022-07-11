@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Agency } from '../../agency/entities/agency.entity';
+import { Contrat } from '../../contrat/entities/contrat.entity';
 
 import { CarStatutEnum } from '../enums/car-statut.enum';
 import { carburantEnum } from '../enums/carburant.enum';
@@ -67,4 +69,10 @@ export class Car {
     onUpdate: 'CASCADE',
   })
   agence: Agency;
+
+  @OneToMany(() => Contrat, (contrat) => contrat.car, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  contrats: Contrat[];
 }
