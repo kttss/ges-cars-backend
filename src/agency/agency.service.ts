@@ -109,6 +109,7 @@ export class AgencyService {
       .leftJoinAndSelect('agency.emails', 'email')
       .leftJoinAndSelect('agency.telephones', 'telephone')
       .leftJoinAndSelect('agency.faxs', 'fax')
+      .leftJoinAndSelect('agency.cars', 'cars')
       .where({ id: id })
       .getOne();
   }

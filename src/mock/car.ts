@@ -19,6 +19,7 @@ export const CARS = [
     vignetteDateExpertation: new Date('12/12/2022'),
     visiteImages: ['visite 1'],
     visiteeDateExpertation: new Date('12/12/2022'),
+    agence: 1,
   },
   {
     marque: 'Ford',
@@ -37,6 +38,7 @@ export const CARS = [
     vignetteDateExpertation: new Date('12/12/2022'),
     visiteImages: ['visite 2'],
     visiteeDateExpertation: new Date('12/12/2022'),
+    agence: 1,
   },
   {
     marque: 'ford',
@@ -55,6 +57,7 @@ export const CARS = [
     vignetteDateExpertation: new Date('12/12/2022'),
     visiteImages: ['visite 3'],
     visiteeDateExpertation: new Date('12/12/2022'),
+    agence: 2,
   },
   {
     marque: 'seat',
@@ -73,6 +76,7 @@ export const CARS = [
     vignetteDateExpertation: new Date('12/12/2022'),
     visiteImages: ['visite 4'],
     visiteeDateExpertation: new Date('12/12/2022'),
+    agence: 2,
   },
   {
     marque: 'peugeot',
@@ -91,5 +95,6 @@ export const CARS = [
     vignetteDateExpertation: new Date('12/12/2022'),
     visiteImages: ['visite 5'],
     visiteeDateExpertation: new Date('12/12/2022'),
+    agence: 1,
   },
 ];

@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
+import { AgencyService } from '../agency/agency.service';
+import { Agency } from '../agency/entities/agency.entity';
 import { CARS } from '../mock/car';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
@@ -14,12 +16,17 @@ export class CarService {
   constructor(
     @InjectRepository(Car) private carRepository: Repository<Car>,
     @InjectRepository(Document)
+    @InjectRepository(Agency)
+    private agenceRepository: Repository<Agency>,
+    @InjectRepository(Document)
     private documentRepository: Repository<Document>,
     @InjectRepository(File) private fileRepository: Repository<File>,
+    private agenceService: AgencyService,
   ) {}
 
   async create(createCarDto: CreateCarDto) {
     const {
+      agence,
       marque,
       model,
       matricule,
@@ -39,6 +46,9 @@ export class CarService {
     } = createCarDto;
     const car = new Car();
 
+    const ageneceEnti = await this.agenceService.findOne(agence);
+
+    car.agence = ageneceEnti;
     car.carburant = carburant;
     car.description = description;
     car.marque = marque;
@@ -77,6 +87,8 @@ export class CarService {
     car.visite = await visite;
 
     const res = await this.carRepository.save(car);
+    ageneceEnti.cars.push(car);
+    await this.agenceRepository.save(ageneceEnti);
     return res.id;
   }
 
@@ -104,6 +116,7 @@ export class CarService {
       .leftJoinAndSelect('car.assurance', 'assurance')
       .leftJoinAndSelect('car.vignette', 'vignette')
       .leftJoinAndSelect('car.visite', 'visite')
+      .leftJoinAndSelect('car.agence', 'agence')
       .where({ id: id })
       .getOne();
   }
@@ -126,6 +139,7 @@ export class CarService {
       vignetteDateExpertation,
       visiteImages,
       visiteeDateExpertation,
+      agence,
     } = updateCarDto;
 
     const car = await this.findOne(id);
@@ -134,12 +148,15 @@ export class CarService {
       throw new NotFoundException('car is not found');
     }
 
+    const ageneceEnti = await this.agenceService.findOne(agence);
+
     car.carburant = carburant;
     car.description = description;
     car.marque = marque;
     car.matricule = matricule;
     car.model = model;
     car.statut = statut;
+    car.agence = ageneceEnti;
 
     // await this.documentRepository
     // .createQueryBuilder('document')
@@ -162,7 +179,6 @@ export class CarService {
     const visiteDoc = await this.documentRepository.findOne({
       where: [{ id: car.visite.id }],
     });
-    console.log(carteGriseDoc);
 
     //delete old files
     this.fileRepository
@@ -212,6 +228,8 @@ export class CarService {
     );
 
     const res = await this.carRepository.save(car);
+    ageneceEnti.cars.push(car);
+    await this.agenceRepository.save(ageneceEnti);
     return res.id;
   }
 

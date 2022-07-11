@@ -61,4 +61,10 @@ export class Car {
   @OneToOne(() => Document, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn()
   visite: Document;
+
+  @ManyToOne(() => Agency, (agence) => agence.cars, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  agence: Agency;
 }

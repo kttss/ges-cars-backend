@@ -1,9 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsDateString, IsEnum, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsNumber,
+  isNumber,
+  IsString,
+} from 'class-validator';
 
 import { carburantEnum } from '../enums/carburant.enum';
 
 export class CreateCarDto {
+  @ApiProperty()
+  @IsNumber()
+  agence: number;
+
   @ApiProperty()
   @IsString()
   marque: string;
