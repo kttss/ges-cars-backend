@@ -105,6 +105,18 @@ export class CarService {
       .getMany(); // await this.carRepository.find();
   }
 
+  async findAllByAdmin(id: number) {
+    const agences = await await this.agenceService.findAllByAdmin(id);
+    const agencesIds = agences.map((a) => a.id);
+
+    const result = await this.carRepository
+      .createQueryBuilder('car')
+      .leftJoinAndSelect('car.carteGrise', 'cart')
+      .where('car.agenceId IN (:...ids)', { ids: [...agencesIds] })
+      .getMany();
+    return result;
+  }
+
   async findOne(id: number) {
     return await this.carRepository
       .createQueryBuilder('car')

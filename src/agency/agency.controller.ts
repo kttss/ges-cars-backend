@@ -47,9 +47,7 @@ export class AgencyController {
   @Get()
   findAll(@Request() req) {
     const header: any = req.headers;
-    // console.log(header.authorization);
     const jwtDecoded: any = this.jwt.decode(header.authorization.split(' ')[1]);
-    console.log(jwtDecoded);
     if (jwtDecoded.role === RoleEnum.Admin) {
       return this.agencyService.findAll();
     } else {
