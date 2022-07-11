@@ -7,7 +7,9 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -16,6 +18,7 @@ import {
 } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RoleEnum } from '../user/enums/role.enum';
 import { AgencyService } from './agency.service';
 import { CreateAgencyDto } from './dto/create-agency.dto';
 import { UpdateAgencyDto } from './dto/update-agency.dto';
@@ -24,7 +27,10 @@ import { UpdateAgencyDto } from './dto/update-agency.dto';
 // @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class AgencyController {
-  constructor(private readonly agencyService: AgencyService) {}
+  constructor(
+    private readonly agencyService: AgencyService,
+    private jwt: JwtService,
+  ) {}
 
   @Post()
   @ApiCreatedResponse({
@@ -39,8 +45,16 @@ export class AgencyController {
   }
 
   @Get()
-  findAll() {
-    return this.agencyService.findAll();
+  findAll(@Request() req) {
+    const header: any = req.headers;
+    // console.log(header.authorization);
+    const jwtDecoded: any = this.jwt.decode(header.authorization.split(' ')[1]);
+    console.log(jwtDecoded);
+    if (jwtDecoded.role === RoleEnum.Admin) {
+      return this.agencyService.findAll();
+    } else {
+      return this.agencyService.findAllByAdmin(jwtDecoded.id);
+    }
   }
 
   @Get('load')

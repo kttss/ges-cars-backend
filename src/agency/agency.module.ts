@@ -8,6 +8,7 @@ import { Email } from './entities/email.entity';
 import { UserModule } from '../user/user.module';
 import { Telephone } from './entities/telephone..entity';
 import { Fax } from './entities/fax.entity';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -15,6 +16,6 @@ import { Fax } from './entities/fax.entity';
     UserModule,
   ],
   controllers: [AgencyController],
-  providers: [AgencyService],
+  providers: [AgencyService, JwtService],
 })
 export class AgencyModule {}

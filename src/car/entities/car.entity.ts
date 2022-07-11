@@ -3,9 +3,11 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Agency } from '../../agency/entities/agency.entity';
 
 import { CarStatutEnum } from '../enums/car-statut.enum';
 import { carburantEnum } from '../enums/carburant.enum';

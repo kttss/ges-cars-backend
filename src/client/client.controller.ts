@@ -42,6 +42,11 @@ export class ClientController {
     return this.clientService.findOne(+id);
   }
 
+  @Get('doc/:id')
+  findDocument(@Param('id') id: string) {
+    return this.clientService.findDocByID(+id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
     return this.clientService.update(+id, updateClientDto);

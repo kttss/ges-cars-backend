@@ -82,6 +82,25 @@ export class AgencyService {
 
     return agences;
   }
+  async findAllByAdmin(id: number) {
+    console.log('ccc');
+    const agences = await this.agenceRepository
+      .createQueryBuilder('agency')
+      .leftJoinAndSelect('agency.users', 'user')
+      .leftJoinAndSelect('agency.emails', 'email')
+      .leftJoinAndSelect('agency.telephones', 'telephone')
+      .leftJoinAndSelect('agency.faxs', 'fax')
+      .where('user.id = (:id)', {
+        id: id,
+      })
+      .getMany();
+
+    // return await this.agenceRepository.find({
+    //   relations: ['users', 'emails'],
+    // });
+
+    return agences;
+  }
 
   async findOne(id: number) {
     return await this.agenceRepository

@@ -84,9 +84,20 @@ export class ClientService {
   }
 
   async findOne(id: number) {
-    return await this.clientRepository.findOne({
-      where: [{ id: id }],
-    });
+    return await this.clientRepository
+      .createQueryBuilder('client')
+      .leftJoinAndSelect('client.cinFiles', 'cin')
+      .leftJoinAndSelect('client.permisFiles', 'permisFiles')
+      .where({ id: id })
+      .getOne();
+  }
+
+  async findDocByID(id: number) {
+    return await this.documentRepository
+      .createQueryBuilder('document')
+      .leftJoinAndSelect('document.files', 'files')
+      .where({ id: id })
+      .getOne();
   }
 
   async update(id: number, updateClientDto: UpdateClientDto) {
@@ -101,6 +112,8 @@ export class ClientService {
       villeCin,
       villePermis,
       datePermis,
+      cinImages,
+      permisImages,
     } = updateClientDto;
 
     const client = await this.findOne(id);
@@ -119,12 +132,49 @@ export class ClientService {
     client.villeCin = villeCin;
     client.villePermis = villePermis;
     client.datePermis = datePermis;
+    const docCin = await this.documentRepository.findOne({
+      where: [{ id: client.cinFiles.id }],
+    });
+    const docPermis = await this.documentRepository.findOne({
+      where: [{ id: client.permisFiles.id }],
+    });
+
+    //delete old files
+    this.fileRepository
+      .createQueryBuilder()
+      .delete()
+      .from(File)
+      .where('file.documentId IN (:id)', { id: [docCin.id, docPermis.id] })
+      .execute();
+
+    // adding new cin files
+    const fileCinList = [];
+    cinImages.forEach((f) => {
+      const file = new File();
+      file.path = f;
+      fileCinList.push(file);
+    });
+    await this.fileRepository.save([...fileCinList]);
+    docCin.files = [...fileCinList];
+    await this.documentRepository.save(docCin);
+
+    // adding new permis files
+    const filePermisList = [];
+    permisImages.forEach((f) => {
+      const file = new File();
+      file.path = f;
+      filePermisList.push(file);
+    });
+    await this.fileRepository.save([...filePermisList]);
+    docPermis.files = [...filePermisList];
+    await this.documentRepository.save(docPermis);
+
     await this.clientRepository.save(client);
     return client;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} client`;
+  async remove(id: number) {
+    return await this.clientRepository.delete(id);
   }
 
   loadMockData() {

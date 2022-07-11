@@ -1,4 +1,4 @@
-import { IsDate, IsString } from 'class-validator';
+import { IsDate, IsDateString, IsString } from 'class-validator';
 import {
   Column,
   Entity,
@@ -20,8 +20,8 @@ export class Document {
   id: number;
 
   @Column({ nullable: true })
-  //   @IsDate()
-  DateExpiration: string;
+  @IsDateString()
+  DateExpiration: Date;
 
   @OneToMany(() => File, (file) => file.document, {
     onDelete: 'CASCADE',

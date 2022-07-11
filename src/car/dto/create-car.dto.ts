@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEnum, IsString } from 'class-validator';
+import { IsArray, IsDateString, IsEnum, IsString } from 'class-validator';
 
 import { carburantEnum } from '../enums/carburant.enum';
 
@@ -33,38 +33,38 @@ export class CreateCarDto {
   carteGriseImages: string[];
 
   @ApiProperty()
-  @IsString()
-  carteGriseDateExpertation: string;
+  @IsDateString()
+  carteGriseDateExpertation: Date;
 
   @ApiProperty()
   @IsArray()
   autorisationCirculationImages: string[];
 
   @ApiProperty()
-  @IsString()
-  autorisationCirculationDateExpertation: string;
+  @IsDateString()
+  autorisationCirculationDateExpertation: Date;
 
   @ApiProperty()
   @IsArray()
   assuranceImages: string[];
 
   @ApiProperty()
-  @IsString()
-  assuranceDateExpertation: string;
+  @IsDateString()
+  assuranceDateExpertation: Date;
 
   @ApiProperty()
   @IsArray()
   vignetteImages: string[];
 
   @ApiProperty()
-  @IsString()
-  vignetteDateExpertation: string;
+  @IsDateString()
+  vignetteDateExpertation: Date;
 
   @ApiProperty()
   @IsArray()
   visiteImages: string[];
 
   @ApiProperty()
-  @IsString()
-  visiteeDateExpertation: string;
+  @IsDateString()
+  visiteeDateExpertation: Date;
 }
