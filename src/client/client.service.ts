@@ -1,8 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { UserJwtDecoded } from '../auth/dto/user-jwt-decoded.dto';
 import { Document } from '../car/entities/document.entity';
 import { File } from '../car/entities/file.entity';
+import { LoggerService } from '../logger/logger.service';
 import { ClIENTS } from '../mock/client';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
@@ -15,9 +19,11 @@ export class ClientService {
     @InjectRepository(Document)
     private documentRepository: Repository<Document>,
     @InjectRepository(File) private fileRepository: Repository<File>,
+    private readonly loggerService: LoggerService,
+    private jwt: JwtService,
   ) {}
 
-  async create(createClientDto: CreateClientDto) {
+  async create(createClientDto: CreateClientDto, token?: string) {
     const {
       firstname,
       adresse,
@@ -76,6 +82,14 @@ export class ClientService {
     await this.documentRepository.save(permisdoc);
     client.permisFiles = permisdoc;
     await this.clientRepository.save(client);
+
+    if (token) {
+      const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+        token.split(' ')[1],
+      ) as UserJwtDecoded;
+      this.loggerService.create(jwtDecoded, 'a ajouter un client id:' + res.id);
+    }
+
     return res.id;
   }
 
@@ -100,7 +114,7 @@ export class ClientService {
       .getOne();
   }
 
-  async update(id: number, updateClientDto: UpdateClientDto) {
+  async update(id: number, updateClientDto: UpdateClientDto, token: string) {
     const {
       firstname,
       adresse,
@@ -170,11 +184,22 @@ export class ClientService {
     await this.documentRepository.save(docPermis);
 
     await this.clientRepository.save(client);
+    const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+      token.split(' ')[1],
+    ) as UserJwtDecoded;
+    this.loggerService.create(
+      jwtDecoded,
+      'est modifier un client id:' + client.id,
+    );
     return client;
   }
 
-  async remove(id: number) {
-    return await this.clientRepository.delete(id);
+  async remove(id: number, token: string) {
+    const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+      token.split(' ')[1],
+    ) as UserJwtDecoded;
+    this.loggerService.create(jwtDecoded, 'a supprimer un client id:' + id);
+    return this.clientRepository.delete(id);
   }
 
   loadMockData() {

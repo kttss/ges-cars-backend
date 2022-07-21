@@ -11,8 +11,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RoleEnum } from '../user/enums/role.enum';
+
 import { CarService } from './car.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
@@ -28,21 +27,13 @@ export class CarController {
   ) {}
 
   @Post()
-  create(@Body() createCarDto: CreateCarDto) {
-    return this.carService.create(createCarDto);
+  create(@Body() createCarDto: CreateCarDto, @Request() req: any) {
+    return this.carService.create(createCarDto, req.headers.authorization);
   }
 
   @Get()
-  findAll(@Request() req) {
-    const header: any = req.headers;
-    const jwtDecoded: any = this.jwt.decode(header.authorization.split(' ')[1]);
-    if (jwtDecoded.role === RoleEnum.Admin) {
-      return this.carService.findAll();
-    } else {
-      return this.carService.findAllByAdmin(jwtDecoded.id);
-    }
-
-    return this.carService.findAll();
+  findAll(@Request() req: any) {
+    return this.carService.findAll(req.headers.authorization);
   }
 
   @Get('load')
@@ -56,12 +47,16 @@ export class CarController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCarDto: UpdateCarDto) {
-    return this.carService.update(+id, updateCarDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateCarDto: UpdateCarDto,
+    @Request() req: any,
+  ) {
+    return this.carService.update(+id, updateCarDto, req.headers.authorization);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.carService.remove(+id);
+  remove(@Param('id') id: string, @Request() req: any) {
+    return this.carService.remove(+id, req.headers.authorization);
   }
 }

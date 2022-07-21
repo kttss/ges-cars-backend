@@ -20,6 +20,9 @@ import { Document } from '../car/entities/document.entity';
 import { CarModule } from '../car/car.module';
 import { CarService } from '../car/car.service';
 import { Car } from '../car/entities/car.entity';
+import { LoggerService } from '../logger/logger.service';
+import { Logger } from '../logger/entities/logger.entity';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -34,6 +37,7 @@ import { Car } from '../car/entities/car.entity';
       File,
       Document,
       Car,
+      Logger,
     ]),
     AgencyModule,
     ClientModule,
@@ -46,6 +50,8 @@ import { Car } from '../car/entities/car.entity';
     UserService,
     ClientService,
     CarService,
+    LoggerService,
+    JwtService,
   ],
 })
 export class ContratModule {}

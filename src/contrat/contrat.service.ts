@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { AgencyService } from '../agency/agency.service';
 import { CarService } from '../car/car.service';
 import { ClientService } from '../client/client.service';
+import { LoggerService } from '../logger/logger.service';
 import { CreateContratDto } from './dto/create-contrat.dto';
 import { UpdateContratDto } from './dto/update-contrat.dto';
 import { Contrat } from './entities/contrat.entity';
@@ -16,6 +17,7 @@ export class ContratService {
     private agenceService: AgencyService,
     private clientService: ClientService,
     private carService: CarService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async create(createContratDto: CreateContratDto) {

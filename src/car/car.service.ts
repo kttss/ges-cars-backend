@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
 import { AgencyService } from '../agency/agency.service';
 import { Agency } from '../agency/entities/agency.entity';
+import { UserJwtDecoded } from '../auth/dto/user-jwt-decoded.dto';
+import { LoggerService } from '../logger/logger.service';
 import { CARS } from '../mock/car';
+import { RoleEnum } from '../user/enums/role.enum';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 import { Car } from './entities/car.entity';
@@ -22,9 +26,11 @@ export class CarService {
     private documentRepository: Repository<Document>,
     @InjectRepository(File) private fileRepository: Repository<File>,
     private agenceService: AgencyService,
+    private readonly loggerService: LoggerService,
+    private jwt: JwtService,
   ) {}
 
-  async create(createCarDto: CreateCarDto) {
+  async create(createCarDto: CreateCarDto, token?: string) {
     const {
       agence,
       marque,
@@ -89,20 +95,32 @@ export class CarService {
     const res = await this.carRepository.save(car);
     ageneceEnti.cars.push(car);
     await this.agenceRepository.save(ageneceEnti);
+
+    if (token) {
+      const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+        token.split(' ')[1],
+      ) as UserJwtDecoded;
+      this.loggerService.create(
+        jwtDecoded,
+        'a ajouter une voiture id:' + res.id,
+      );
+    }
+
     return res.id;
   }
 
-  async findAll() {
-    const a = await this.carRepository
-      .createQueryBuilder('car')
-      .leftJoinAndSelect('car.carteGrise', 'cart')
-      // .leftJoinAndSelect('.carteGrise', 'cart')
-      .getMany();
-    return a;
-    return await this.documentRepository
-      .createQueryBuilder('document')
-      .leftJoinAndSelect('document.files', 'cart')
-      .getMany(); // await this.carRepository.find();
+  async findAll(token: string) {
+    const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+      token.split(' ')[1],
+    ) as UserJwtDecoded;
+    if (jwtDecoded.role === RoleEnum.Admin) {
+      return this.carRepository
+        .createQueryBuilder('car')
+        .leftJoinAndSelect('car.carteGrise', 'cart')
+        .getMany();
+    } else {
+      return this.findAllByAdmin(jwtDecoded.id);
+    }
   }
 
   async findAllByAdmin(id: number) {
@@ -133,7 +151,7 @@ export class CarService {
       .getOne();
   }
 
-  async update(id: number, updateCarDto: UpdateCarDto) {
+  async update(id: number, updateCarDto: UpdateCarDto, token: string) {
     const {
       marque,
       model,
@@ -242,11 +260,24 @@ export class CarService {
     const res = await this.carRepository.save(car);
     ageneceEnti.cars.push(car);
     await this.agenceRepository.save(ageneceEnti);
+
+    const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+      token.split(' ')[1],
+    ) as UserJwtDecoded;
+    this.loggerService.create(
+      jwtDecoded,
+      'est modifier une voiture id:' + res.id,
+    );
+
     return res.id;
   }
 
-  async remove(id: number) {
-    return await this.carRepository.delete(id);
+  async remove(id: number, token: string) {
+    const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+      token.split(' ')[1],
+    ) as UserJwtDecoded;
+    this.loggerService.create(jwtDecoded, 'a supprimer une voiture id:' + id);
+    return this.carRepository.delete(id);
   }
 
   loadMockData() {

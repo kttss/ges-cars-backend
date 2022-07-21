@@ -20,6 +20,8 @@ import { Document } from './car/entities/document.entity';
 import { File } from './car/entities/file.entity';
 import { UploadModule } from './upload/upload.module';
 import { Contrat } from './contrat/entities/contrat.entity';
+import { LoggerModule } from './logger/logger.module';
+import { Logger } from './logger/entities/logger.entity';
 
 @Module({
   imports: [
@@ -42,6 +44,7 @@ import { Contrat } from './contrat/entities/contrat.entity';
         Document,
         File,
         Contrat,
+        Logger,
       ],
       synchronize: true,
       dropSchema: false,
@@ -53,6 +56,7 @@ import { Contrat } from './contrat/entities/contrat.entity';
     AuthModule,
     AgencyModule,
     UploadModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

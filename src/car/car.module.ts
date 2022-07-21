@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
 
 import { Document } from './entities/document.entity';
 import { CarService } from './car.service';
@@ -14,7 +15,8 @@ import { Telephone } from '../agency/entities/telephone..entity';
 import { Fax } from '../agency/entities/fax.entity';
 import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
-import { JwtService } from '@nestjs/jwt';
+import { LoggerService } from '../logger/logger.service';
+import { Logger } from '../logger/entities/logger.entity';
 
 @Module({
   imports: [
@@ -27,10 +29,17 @@ import { JwtService } from '@nestjs/jwt';
       Telephone,
       Fax,
       User,
+      Logger,
     ]),
     AgencyModule,
   ],
   controllers: [CarController],
-  providers: [CarService, AgencyService, UserService, JwtService],
+  providers: [
+    CarService,
+    AgencyService,
+    UserService,
+    JwtService,
+    LoggerService,
+  ],
 })
 export class CarModule {}

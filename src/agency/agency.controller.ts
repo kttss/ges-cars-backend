@@ -46,18 +46,17 @@ export class AgencyController {
 
   @Get()
   findAll(@Request() req) {
-    const header: any = req.headers;
-    const jwtDecoded: any = this.jwt.decode(header.authorization.split(' ')[1]);
-    if (jwtDecoded.role === RoleEnum.Admin) {
-      return this.agencyService.findAll();
-    } else {
-      return this.agencyService.findAllByAdmin(jwtDecoded.id);
-    }
+    return this.agencyService.findAll(req.headers.authorization);
   }
 
   @Get('load')
   loadData() {
     return this.agencyService.loadMockData();
+  }
+
+  @Get('logs')
+  getLogs() {
+    return this.agencyService.getAlllogs();
   }
 
   @Get(':id')
@@ -74,8 +73,16 @@ export class AgencyController {
     description: 'user',
     type: UpdateAgencyDto,
   })
-  update(@Param('id') id: string, @Body() updateAgencyDto: UpdateAgencyDto) {
-    return this.agencyService.update(+id, updateAgencyDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateAgencyDto: UpdateAgencyDto,
+    @Request() req,
+  ) {
+    return this.agencyService.update(
+      +id,
+      updateAgencyDto,
+      req.headers.authorization,
+    );
   }
 
   @Delete(':id')
@@ -83,7 +90,7 @@ export class AgencyController {
     name: 'id',
     description: 'delete agence by ID',
   })
-  remove(@Param('id') id: string) {
-    return this.agencyService.remove(+id);
+  remove(@Param('id') id: string, @Request() req) {
+    return this.agencyService.remove(+id, req.headers.authorization);
   }
 }

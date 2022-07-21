@@ -1,8 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { UserJwtDecoded } from '../auth/dto/user-jwt-decoded.dto';
+import { LoggerService } from '../logger/logger.service';
 import { AGENCES } from '../mock/agence';
 import { User } from '../user/entities/user.entity';
+import { RoleEnum } from '../user/enums/role.enum';
 import { UserService } from '../user/user.service';
 import { CreateAgencyDto } from './dto/create-agency.dto';
 import { UpdateAgencyDto } from './dto/update-agency.dto';
@@ -20,8 +25,10 @@ export class AgencyService {
     private telphoneRepository: Repository<Telephone>,
     @InjectRepository(Fax) private faxRepository: Repository<Fax>,
     private readonly userService: UserService,
+    private readonly loggerService: LoggerService,
+    private jwt: JwtService,
   ) {}
-  async create(createAgencyDto: CreateAgencyDto) {
+  async create(createAgencyDto: CreateAgencyDto, token?: string) {
     const {
       name,
       description,
@@ -64,24 +71,36 @@ export class AgencyService {
       this.faxRepository.save(fax);
     });
 
+    if (token) {
+      const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+        token.split(' ')[1],
+      ) as UserJwtDecoded;
+      this.loggerService.create(
+        jwtDecoded,
+        'a ajouter une agence id:' + res.id,
+      );
+    }
+
     return res.id;
   }
 
-  async findAll() {
-    const agences = await this.agenceRepository
-      .createQueryBuilder('agency')
-      .leftJoinAndSelect('agency.users', 'user')
-      .leftJoinAndSelect('agency.emails', 'email')
-      .leftJoinAndSelect('agency.telephones', 'telephone')
-      .leftJoinAndSelect('agency.faxs', 'fax')
-      .getMany();
-
-    // return await this.agenceRepository.find({
-    //   relations: ['users', 'emails'],
-    // });
-
-    return agences;
+  async findAll(token: string) {
+    const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+      token.split(' ')[1],
+    ) as UserJwtDecoded;
+    if (jwtDecoded.role === RoleEnum.Admin) {
+      return this.agenceRepository
+        .createQueryBuilder('agency')
+        .leftJoinAndSelect('agency.users', 'user')
+        .leftJoinAndSelect('agency.emails', 'email')
+        .leftJoinAndSelect('agency.telephones', 'telephone')
+        .leftJoinAndSelect('agency.faxs', 'fax')
+        .getMany();
+    } else {
+      return this.findAllByAdmin(jwtDecoded.id);
+    }
   }
+
   async findAllByAdmin(id: number) {
     const agences = await this.agenceRepository
       .createQueryBuilder('agency')
@@ -113,7 +132,7 @@ export class AgencyService {
       .getOne();
   }
 
-  async update(id: number, updateAgencyDto: UpdateAgencyDto) {
+  async update(id: number, updateAgencyDto: UpdateAgencyDto, token: string) {
     const {
       name,
       description,
@@ -180,12 +199,25 @@ export class AgencyService {
     const result = await this.userService.getUsersByIds(users);
     agence.users = [...result];
 
-    await this.agenceRepository.save(agence);
-    return await this.findById(id);
+    const res = await this.agenceRepository.save(agence);
+
+    const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+      token.split(' ')[1],
+    ) as UserJwtDecoded;
+    this.loggerService.create(
+      jwtDecoded,
+      'est modifier une agence id:' + res.id,
+    );
+
+    return this.findById(id);
   }
 
-  async remove(id: number) {
-    return await this.agenceRepository.delete(id);
+  async remove(id: number, token: string) {
+    const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+      token.split(' ')[1],
+    ) as UserJwtDecoded;
+    this.loggerService.create(jwtDecoded, 'a supprimer une agence id:' + id);
+    return this.agenceRepository.delete(id);
   }
 
   async findById(id: number) {
@@ -199,5 +231,9 @@ export class AgencyService {
     agenceList.forEach((a: CreateAgencyDto) => {
       this.create(a);
     });
+  }
+
+  getAlllogs() {
+    return this.loggerService.getAll();
   }
 }

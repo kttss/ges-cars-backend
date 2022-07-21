@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 
@@ -23,8 +24,11 @@ export class ClientController {
     description: 'client',
     type: CreateClientDto,
   })
-  create(@Body() createClientDto: CreateClientDto) {
-    return this.clientService.create(createClientDto);
+  create(@Body() createClientDto: CreateClientDto, @Request() req) {
+    return this.clientService.create(
+      createClientDto,
+      req.headers.authorization,
+    );
   }
 
   @Get()
@@ -48,12 +52,20 @@ export class ClientController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
-    return this.clientService.update(+id, updateClientDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateClientDto: UpdateClientDto,
+    @Request() req,
+  ) {
+    return this.clientService.update(
+      +id,
+      updateClientDto,
+      req.headers.authorization,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clientService.remove(+id);
+  remove(@Param('id') id: string, @Request() req) {
+    return this.clientService.remove(+id, req.headers.authorization);
   }
 }
