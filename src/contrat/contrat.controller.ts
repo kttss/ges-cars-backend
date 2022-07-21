@@ -27,6 +27,11 @@ export class ContratController {
     return this.contratService.findAll();
   }
 
+  @Get('pdf')
+  generatePdf() {
+    this.contratService.generateContrat();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.contratService.findOne(+id);
