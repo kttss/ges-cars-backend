@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 
 import { AgencyService } from '../agency/agency.service';
 import { CarService } from '../car/car.service';
@@ -14,6 +14,10 @@ import * as PizZip from 'pizzip';
 const Docxtemplater = require('docxtemplater');
 import * as fs from 'fs';
 import * as path from 'path';
+import { CarStatutEnum } from '../car/enums/car-statut.enum';
+import { RoleEnum } from '../user/enums/role.enum';
+import { UserJwtDecoded } from '../auth/dto/user-jwt-decoded.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class ContratService {
@@ -23,6 +27,7 @@ export class ContratService {
     private clientService: ClientService,
     private carService: CarService,
     private readonly loggerService: LoggerService,
+    private jwt: JwtService,
   ) {}
 
   async create(createContratDto: CreateContratDto) {
@@ -59,8 +64,25 @@ export class ContratService {
     return res.id;
   }
 
-  async findAll() {
-    return await this.contratRepository.find();
+  async findAll(token?: string) {
+    const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+      token.split(' ')[1],
+    ) as UserJwtDecoded;
+    if (jwtDecoded.role === RoleEnum.Admin) {
+      return this.contratRepository.find();
+    } else {
+      return this.findAllByAdmin(jwtDecoded.id);
+    }
+  }
+
+  async findAllByAdmin(id: number) {
+    const agences = await this.agenceService.findAllByAdmin(id);
+    const agencesIds = agences.map((a) => a.id);
+
+    return this.contratRepository
+      .createQueryBuilder('contrat')
+      .where('contrat.agenceId IN (:...ids)', { ids: [...agencesIds] })
+      .getMany();
   }
 
   async findOne(id: number) {
@@ -115,6 +137,79 @@ export class ContratService {
 
   async remove(id: number) {
     return await this.contratRepository.delete(id);
+  }
+
+  async getstatistique(token?: string) {
+    // await
+
+    const date = new Date();
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+    let agencesIds = null;
+    const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+      token.split(' ')[1],
+    ) as UserJwtDecoded;
+    if (jwtDecoded.role !== RoleEnum.Admin) {
+      const agences = await this.agenceService.findAllByAdmin(jwtDecoded.id);
+      agencesIds = agences.map((a) => a.id);
+    }
+
+    const totalOfReservationInThisMonth = agencesIds
+      ? await this.contratRepository
+          .createQueryBuilder('contrat')
+          .where({ satrtAt: Between(firstDay, lastDay) })
+          .where('contrat.agenceId IN (:...ids)', { ids: [...agencesIds] })
+          .getCount()
+      : await this.contratRepository
+          .createQueryBuilder('contrat')
+          .where({ satrtAt: Between(firstDay, lastDay) })
+          .getCount();
+
+    const totalOfReservationInThisYear = agencesIds
+      ? await this.contratRepository
+          .createQueryBuilder('contrat')
+          .where({
+            satrtAt: Between(
+              new Date('01-01-' + date.getFullYear()),
+              new Date('12-31-' + date.getFullYear()),
+            ),
+          })
+          .where('contrat.agenceId IN (:...ids)', { ids: [...agencesIds] })
+          .getCount()
+      : await this.contratRepository
+          .createQueryBuilder('contrat')
+          .where({
+            satrtAt: Between(
+              new Date('01-01-' + date.getFullYear()),
+              new Date('12-31-' + date.getFullYear()),
+            ),
+          })
+          .getCount();
+
+    const totalDisponible = await this.carService.getTotalCarsByStatut(
+      CarStatutEnum.Disponible,
+      agencesIds,
+    );
+    const totalPanne = await this.carService.getTotalCarsByStatut(
+      CarStatutEnum.Panne,
+      agencesIds,
+    );
+    const totalReserved = await this.carService.getTotalCarsByStatut(
+      CarStatutEnum.Reserved,
+      agencesIds,
+    );
+
+    const top = await this.carService.getTop(agencesIds);
+
+    return {
+      totalMonth: totalOfReservationInThisMonth,
+      totalYear: totalOfReservationInThisYear,
+      totalDisponible,
+      totalPanne,
+      totalReserved,
+      top,
+    };
   }
 
   generateContrat() {

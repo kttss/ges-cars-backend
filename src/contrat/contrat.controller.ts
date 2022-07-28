@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ContratService } from './contrat.service';
@@ -23,13 +24,18 @@ export class ContratController {
   }
 
   @Get()
-  findAll() {
-    return this.contratService.findAll();
+  findAll(@Request() req: any) {
+    return this.contratService.findAll(req.headers.authorization);
   }
 
   @Get('pdf')
   generatePdf() {
     this.contratService.generateContrat();
+  }
+
+  @Get('statistique')
+  getstatistique(@Request() req: any) {
+    return this.contratService.getstatistique(req.headers.authorization);
   }
 
   @Get(':id')

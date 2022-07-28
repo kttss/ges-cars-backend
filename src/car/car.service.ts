@@ -14,6 +14,7 @@ import { UpdateCarDto } from './dto/update-car.dto';
 import { Car } from './entities/car.entity';
 import { Document } from './entities/document.entity';
 import { File } from './entities/file.entity';
+import { CarStatutEnum } from './enums/car-statut.enum';
 
 @Injectable()
 export class CarService {
@@ -124,7 +125,7 @@ export class CarService {
   }
 
   async findAllByAdmin(id: number) {
-    const agences = await await this.agenceService.findAllByAdmin(id);
+    const agences = await this.agenceService.findAllByAdmin(id);
     const agencesIds = agences.map((a) => a.id);
 
     const result = await this.carRepository
@@ -304,5 +305,36 @@ export class CarService {
     doc.files = [...fileList];
 
     return await this.documentRepository.save(doc);
+  }
+
+  async getTotalCarsByStatut(statut: CarStatutEnum, agencesIds?: any[]) {
+    return agencesIds
+      ? this.carRepository
+          .createQueryBuilder('car')
+          .where('car.agenceId IN (:...ids)', { ids: [...agencesIds] })
+          .andWhere('car.statut = :s', { s: statut })
+          .getCount()
+      : this.carRepository.count({ where: { statut: statut } });
+  }
+
+  async getTop(agencesIds?: any[]) {
+    let cars = [];
+    if (agencesIds) {
+      cars = await this.carRepository
+        .createQueryBuilder('car')
+        .leftJoinAndSelect('car.contrats', 'contrats')
+        .where('car.agenceId IN (:...ids)', { ids: [...agencesIds] })
+        .getMany();
+    } else {
+      cars = await this.carRepository
+        .createQueryBuilder('car')
+        .leftJoinAndSelect('car.contrats', 'contrats')
+        .getMany();
+    }
+
+    const data = [...cars].sort(
+      (a, b) => b.contrats.length - a.contrats.length,
+    );
+    return data.slice(0, 5);
   }
 }
