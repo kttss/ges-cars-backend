@@ -35,6 +35,14 @@ export class CreateClientDto {
   villeCin: string;
 
   @ApiProperty()
+  @IsDateString()
+  dateCin: Date;
+
+  @ApiProperty()
+  @IsString()
+  permis: string;
+
+  @ApiProperty()
   @IsString()
   villePermis: string;
 

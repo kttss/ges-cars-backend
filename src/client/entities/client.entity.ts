@@ -1,4 +1,4 @@
-import { IsDateString, IsString } from 'class-validator';
+import { IsDateString, IsEmpty, IsString } from 'class-validator';
 import {
   Column,
   Entity,
@@ -47,6 +47,14 @@ export class Client {
   @Column()
   @IsString()
   villeCin: string;
+
+  @Column()
+  @IsDateString()
+  dateCin: Date;
+
+  @Column()
+  @IsString()
+  permis: string;
 
   @Column()
   @IsString()

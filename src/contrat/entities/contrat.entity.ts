@@ -1,4 +1,10 @@
-import { IsDateString, IsEnum, IsNumber } from 'class-validator';
+import {
+  IsDateString,
+  IsEmpty,
+  IsEnum,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 import {
   Column,
   Entity,
@@ -61,4 +67,9 @@ export class Contrat {
     onUpdate: 'CASCADE',
   })
   car: Car;
+
+  @Column()
+  @IsString()
+  @IsEmpty()
+  file: string;
 }

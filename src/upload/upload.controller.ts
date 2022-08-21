@@ -57,4 +57,12 @@ export class UploadController {
   ): Promise<any> {
     res.sendFile(filename, { root: 'ged' });
   }
+
+  @Get('readcontrat/:filename')
+  async serveAvatara(
+    @Param('filename') filename: string,
+    @Res() res: any,
+  ): Promise<any> {
+    res.sendFile(filename, { root: 'dist/ged' });
+  }
 }

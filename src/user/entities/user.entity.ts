@@ -16,6 +16,7 @@ import {
 } from 'typeorm';
 
 import { Agency } from '../../agency/entities/agency.entity';
+import { Contrat } from '../../contrat/entities/contrat.entity';
 import { RoleEnum } from '../enums/role.enum';
 
 @Entity()

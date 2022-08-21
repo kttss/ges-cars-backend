@@ -37,6 +37,8 @@ export class ClientService {
       datePermis,
       cinImages,
       permisImages,
+      permis,
+      dateCin,
     } = createClientDto;
 
     const client = new Client();
@@ -50,6 +52,8 @@ export class ClientService {
     client.villePermis = villePermis;
     client.datePermis = datePermis;
     client.birthday = birthday;
+    client.permis = permis;
+    client.dateCin = dateCin;
 
     const res = await this.clientRepository.save(client);
 
@@ -128,6 +132,8 @@ export class ClientService {
       datePermis,
       cinImages,
       permisImages,
+      permis,
+      dateCin,
     } = updateClientDto;
 
     const client = await this.findOne(id);
@@ -146,6 +152,9 @@ export class ClientService {
     client.villeCin = villeCin;
     client.villePermis = villePermis;
     client.datePermis = datePermis;
+    client.permis = permis;
+    client.dateCin = dateCin;
+
     const docCin = await this.documentRepository.findOne({
       where: [{ id: client.cinFiles.id }],
     });

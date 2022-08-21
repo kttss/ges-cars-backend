@@ -28,9 +28,9 @@ export class ContratController {
     return this.contratService.findAll(req.headers.authorization);
   }
 
-  @Get('pdf')
-  generatePdf() {
-    this.contratService.generateContrat();
+  @Get('pdf/:id')
+  generatePdf(@Param('id') id: string) {
+    return this.contratService.generateContrat(+id);
   }
 
   @Get('statistique')

@@ -236,4 +236,30 @@ export class AgencyService {
   getAlllogs() {
     return this.loggerService.getAll();
   }
+
+  getTelsByAgence(id: number) {
+    return this.telphoneRepository
+      .createQueryBuilder('telephones')
+      .where('telephones.agence.id = (:id)', {
+        id: id,
+      })
+      .getMany();
+  }
+
+  getFaxsByAgence(id: number) {
+    return this.faxRepository
+      .createQueryBuilder('fax')
+      .where('fax.agence.id = (:id)', {
+        id: id,
+      })
+      .getMany();
+  }
+  getEmailsByAgence(id: number) {
+    return this.emailRepository
+      .createQueryBuilder('email')
+      .where('email.agence.id = (:id)', {
+        id: id,
+      })
+      .getMany();
+  }
 }

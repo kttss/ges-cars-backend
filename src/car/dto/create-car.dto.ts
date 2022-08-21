@@ -2,11 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
   IsDateString,
+  IsEmpty,
   IsEnum,
   IsNumber,
   isNumber,
   IsString,
 } from 'class-validator';
+import { IsNull } from 'typeorm';
 
 import { carburantEnum } from '../enums/carburant.enum';
 
@@ -37,6 +39,7 @@ export class CreateCarDto {
 
   @ApiProperty()
   @IsString()
+  @IsEmpty()
   description: string;
 
   @ApiProperty()
