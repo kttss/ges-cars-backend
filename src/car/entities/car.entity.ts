@@ -1,4 +1,10 @@
-import { IsEnum, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsOptional,
+  isString,
+  IsString,
+} from 'class-validator';
 import {
   Column,
   Entity,
@@ -43,6 +49,11 @@ export class Car {
   @Column()
   @IsString()
   description: string;
+
+  @Column()
+  @IsString()
+  @IsOptional()
+  dateVidange: string;
 
   @OneToOne(() => Document, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn()

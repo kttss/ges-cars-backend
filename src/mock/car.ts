@@ -9,6 +9,7 @@ export const CARS = [
     carburant: carburantEnum.Diesel,
     statut: CarStatutEnum.Disponible,
     description: '',
+    dateVidange: new Date('2012-03-04') + '',
     carteGriseImages: [
       'https://static.yabiladi.com/files/articles/38456_54514b2b98e5a4496b3ade499426db74_565.JPG',
     ],
@@ -38,6 +39,7 @@ export const CARS = [
     carburant: carburantEnum.Diesel,
     statut: CarStatutEnum.Disponible,
     description: 'test',
+    dateVidange: new Date('2012-03-04') + '',
     carteGriseImages: [
       'https://static.yabiladi.com/files/articles/38456_54514b2b98e5a4496b3ade499426db74_565.JPG',
     ],
@@ -67,6 +69,7 @@ export const CARS = [
     carburant: carburantEnum.Diesel,
     statut: CarStatutEnum.Disponible,
     description: '',
+    dateVidange: new Date('2012-03-04') + '',
     carteGriseImages: [
       'https://static.yabiladi.com/files/articles/38456_54514b2b98e5a4496b3ade499426db74_565.JPG',
     ],
@@ -96,6 +99,7 @@ export const CARS = [
     carburant: carburantEnum.Diesel,
     statut: CarStatutEnum.Disponible,
     description: '',
+    dateVidange: new Date('2012-03-04') + '',
     carteGriseImages: [
       'https://static.yabiladi.com/files/articles/38456_54514b2b98e5a4496b3ade499426db74_565.JPG',
     ],
@@ -125,6 +129,7 @@ export const CARS = [
     carburant: carburantEnum.Diesel,
     statut: CarStatutEnum.Disponible,
     description: '',
+    dateVidange: new Date('2012-03-04') + '',
     carteGriseImages: [
       'https://static.yabiladi.com/files/articles/38456_54514b2b98e5a4496b3ade499426db74_565.JPG',
     ],

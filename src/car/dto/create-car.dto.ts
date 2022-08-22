@@ -1,11 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsArray,
+  isDateString,
   IsDateString,
+  isEmpty,
   IsEmpty,
   IsEnum,
   IsNumber,
   isNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 import { IsNull } from 'typeorm';
@@ -39,7 +42,7 @@ export class CreateCarDto {
 
   @ApiProperty()
   @IsString()
-  @IsEmpty()
+  @IsOptional()
   description: string;
 
   @ApiProperty()
@@ -76,9 +79,16 @@ export class CreateCarDto {
 
   @ApiProperty()
   @IsArray()
+  @IsOptional()
   visiteImages: string[];
 
   @ApiProperty()
-  @IsDateString()
+  @IsString()
+  @IsOptional()
   visiteeDateExpertation: Date;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  dateVidange: string;
 }

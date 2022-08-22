@@ -50,6 +50,7 @@ export class CarService {
       vignetteDateExpertation,
       visiteImages,
       visiteeDateExpertation,
+      dateVidange,
     } = createCarDto;
     const car = new Car();
 
@@ -62,6 +63,7 @@ export class CarService {
     car.matricule = matricule;
     car.model = model;
     car.statut = statut;
+    car.dateVidange = dateVidange;
 
     await this.carRepository.save(car);
 
@@ -85,14 +87,20 @@ export class CarService {
       vignetteDateExpertation,
       vignetteImages,
     );
-    const visite = this.saveDocument(car, visiteeDateExpertation, visiteImages);
 
     car.carteGrise = await carteGrise;
     car.autorisationCirculation = await autorisationCirculation;
     car.assurance = await assurance;
     car.vignette = await vignette;
-    car.visite = await visite;
 
+    if (visiteeDateExpertation || (visiteImages && visiteImages.length)) {
+      const visite = this.saveDocument(
+        car,
+        visiteeDateExpertation,
+        visiteImages,
+      );
+      car.visite = await visite;
+    }
     const res = await this.carRepository.save(car);
     ageneceEnti.cars.push(car);
     await this.agenceRepository.save(ageneceEnti);
@@ -117,7 +125,14 @@ export class CarService {
     if (jwtDecoded.role === RoleEnum.Admin) {
       return this.carRepository
         .createQueryBuilder('car')
-        .leftJoinAndSelect('car.carteGrise', 'cart')
+        .leftJoinAndSelect('car.carteGrise', 'carteGrise')
+        .leftJoinAndSelect(
+          'car.autorisationCirculation',
+          'autorisationCirculation',
+        )
+        .leftJoinAndSelect('car.assurance', 'assurance')
+        .leftJoinAndSelect('car.vignette', 'vignette')
+        .leftJoinAndSelect('car.visite', 'visite')
         .getMany();
     } else {
       return this.findAllByAdmin(jwtDecoded.id);
@@ -171,6 +186,7 @@ export class CarService {
       visiteImages,
       visiteeDateExpertation,
       agence,
+      dateVidange,
     } = updateCarDto;
 
     const car = await this.findOne(id);
@@ -188,6 +204,7 @@ export class CarService {
     car.model = model;
     car.statut = statut;
     car.agence = ageneceEnti;
+    car.dateVidange = dateVidange;
 
     // await this.documentRepository
     // .createQueryBuilder('document')
@@ -207,9 +224,19 @@ export class CarService {
     const vignetteDoc = await this.documentRepository.findOne({
       where: [{ id: car.vignette.id }],
     });
-    const visiteDoc = await this.documentRepository.findOne({
-      where: [{ id: car.visite.id }],
-    });
+    const idss = [
+      carteGriseDoc.id,
+      autorisationCirculationDoc.id,
+      assuranceDoc.id,
+      vignetteDoc.id,
+    ];
+    let visiteDoc;
+    if (car.visite) {
+      visiteDoc = await this.documentRepository.findOne({
+        where: [{ id: car.visite.id }],
+      });
+      idss.push(visiteDoc.id);
+    }
 
     //delete old files
     this.fileRepository
@@ -217,13 +244,7 @@ export class CarService {
       .delete()
       .from(File)
       .where('file.documentId IN (:id)', {
-        id: [
-          carteGriseDoc.id,
-          autorisationCirculationDoc.id,
-          assuranceDoc.id,
-          vignetteDoc.id,
-          visiteDoc.id,
-        ],
+        id: [...idss],
       })
       .execute();
 
@@ -251,12 +272,24 @@ export class CarService {
       vignetteImages,
       vignetteDoc,
     );
-    const visite = this.saveDocument(
-      car,
-      visiteeDateExpertation,
-      visiteImages,
-      visiteDoc,
-    );
+    if (visiteDoc) {
+      const visite = this.saveDocument(
+        car,
+        visiteeDateExpertation,
+        visiteImages,
+        visiteDoc,
+      );
+    } else if (
+      visiteeDateExpertation ||
+      (visiteImages && visiteImages.length)
+    ) {
+      const visite = this.saveDocument(
+        car,
+        visiteeDateExpertation,
+        visiteImages,
+      );
+      car.visite = await visite;
+    }
 
     const res = await this.carRepository.save(car);
     ageneceEnti.cars.push(car);
