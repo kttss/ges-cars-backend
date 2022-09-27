@@ -56,6 +56,10 @@ export class Contrat {
   @JoinColumn()
   client: Client;
 
+  @ManyToOne(() => Client, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @JoinColumn()
+  chauffeur: Client;
+
   @ManyToOne(() => Agency, (agence) => agence.contrats, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

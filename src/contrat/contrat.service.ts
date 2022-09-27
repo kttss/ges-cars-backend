@@ -41,6 +41,7 @@ export class ContratService {
       statut,
       agence,
       client,
+      chauffeur,
       car,
     } = createContratDto;
     const contrat = new Contrat();
@@ -48,6 +49,11 @@ export class ContratService {
     const agenceEntity = await this.agenceService.findById(agence);
     const clientEntity = await this.clientService.findOne(client);
     const carEntity = await this.carService.findOne(car);
+
+    if (chauffeur) {
+      const chauffeurEntity = await this.clientService.findOne(chauffeur);
+      contrat.chauffeur = chauffeurEntity;
+    }
 
     contrat.satrtAt = satrtAt;
     contrat.endAt = endAt;
@@ -69,7 +75,10 @@ export class ContratService {
       token.split(' ')[1],
     ) as UserJwtDecoded;
     if (jwtDecoded.role === RoleEnum.Admin) {
-      return this.contratRepository.find();
+      return this.contratRepository
+        .createQueryBuilder('contrat')
+        .leftJoinAndSelect('contrat.client', 'client')
+        .getMany();
     } else {
       return this.findAllByAdmin(jwtDecoded.id);
     }
@@ -81,6 +90,7 @@ export class ContratService {
 
     return this.contratRepository
       .createQueryBuilder('contrat')
+      .leftJoinAndSelect('contrat.client', 'client')
       .where('contrat.agenceId IN (:...ids)', { ids: [...agencesIds] })
       .getMany();
   }
@@ -91,6 +101,7 @@ export class ContratService {
       .leftJoinAndSelect('contrat.agence', 'agence')
       .leftJoinAndSelect('contrat.client', 'client')
       .leftJoinAndSelect('contrat.car', 'car')
+      .leftJoinAndSelect('contrat.chauffeur', 'chauffeur')
       .where({ id: id })
       .getOne();
   }
@@ -106,6 +117,7 @@ export class ContratService {
       statut,
       agence,
       client,
+      chauffeur,
       car,
     } = updateContratDto;
 
@@ -118,6 +130,11 @@ export class ContratService {
     const agenceEntity = await this.agenceService.findById(agence);
     const clientEntity = await this.clientService.findOne(client);
     const carEntity = await this.carService.findOne(car);
+
+    if (chauffeur) {
+      const chauffeurEntity = await this.clientService.findOne(chauffeur);
+      contrat.chauffeur = chauffeurEntity;
+    }
 
     contrat.satrtAt = satrtAt;
     contrat.endAt = endAt;
@@ -231,6 +248,7 @@ export class ContratService {
     data.cin = contrat.client.cin;
     data.date_cin = contrat.client.dateCin;
     data.permis = contrat.client.permis;
+    data.datePermis = contrat.client.datePermis;
     data.marque = contrat.car.marque;
     data.model = contrat.car.model;
     data.matricule = contrat.car.matricule;
