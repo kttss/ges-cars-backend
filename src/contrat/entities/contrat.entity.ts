@@ -34,10 +34,12 @@ export class Contrat {
 
   @Column()
   @IsDateString()
+  @IsEmpty()
   creatAt: Date;
 
   @Column()
   @IsDateString()
+  @IsEmpty()
   backAt: Date;
 
   @Column()

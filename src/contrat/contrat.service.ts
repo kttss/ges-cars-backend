@@ -34,8 +34,6 @@ export class ContratService {
     const {
       satrtAt,
       endAt,
-      creatAt,
-      backAt,
       price,
       paiement,
       statut,
@@ -57,8 +55,7 @@ export class ContratService {
 
     contrat.satrtAt = satrtAt;
     contrat.endAt = endAt;
-    contrat.creatAt = creatAt;
-    contrat.backAt = backAt;
+    contrat.creatAt = new Date();
     contrat.paiement = paiement;
     contrat.price = Number(price);
     contrat.statut = statut;
@@ -110,8 +107,6 @@ export class ContratService {
     const {
       satrtAt,
       endAt,
-      creatAt,
-      backAt,
       price,
       paiement,
       statut,
@@ -138,8 +133,6 @@ export class ContratService {
 
     contrat.satrtAt = satrtAt;
     contrat.endAt = endAt;
-    contrat.creatAt = creatAt;
-    contrat.backAt = backAt;
     contrat.paiement = paiement;
     contrat.price = Number(price);
     contrat.statut = statut;
@@ -259,12 +252,13 @@ export class ContratService {
     data.logo = contrat.agence.logo;
     data.agence_name = contrat.agence.name;
     data.agence_adresse = contrat.agence.adresse;
-
-    const tels = await this.agenceService.getTelsByAgence(id);
+    const tels = await this.agenceService.getTelsByAgence(contrat.agence.id);
     data.agence_tel = tels.map((e) => e.value).join(' / ');
-    const faxs = await this.agenceService.getFaxsByAgence(id);
+    const faxs = await this.agenceService.getFaxsByAgence(contrat.agence.id);
     data.agence_faxs = faxs.map((e) => e.value).join(' / ');
-    const emails = await this.agenceService.getEmailsByAgence(id);
+    const emails = await this.agenceService.getEmailsByAgence(
+      contrat.agence.id,
+    );
     data.agence_emails = emails.map((e) => e.value).join(' / ');
     data.price = contrat.price;
 

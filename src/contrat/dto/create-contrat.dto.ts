@@ -38,10 +38,12 @@ export class CreateContratDto {
 
   @ApiProperty()
   @IsDateString()
+  @IsOptional()
   creatAt: Date;
 
   @ApiProperty()
   @IsDateString()
+  @IsOptional()
   backAt: Date;
 
   @ApiProperty()
