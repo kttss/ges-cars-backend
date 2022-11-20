@@ -33,6 +33,16 @@ export class Contrat {
   endAt: Date;
 
   @Column()
+  @IsString()
+  @IsEmpty()
+  startPlace: string;
+
+  @Column()
+  @IsString()
+  @IsEmpty()
+  endPlace: string;
+
+  @Column()
   @IsDateString()
   @IsEmpty()
   creatAt: Date;

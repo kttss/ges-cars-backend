@@ -47,6 +47,14 @@ export class CreateContratDto {
   backAt: Date;
 
   @ApiProperty()
+  @IsString()
+  startPlace: string;
+
+  @ApiProperty()
+  @IsString()
+  endPlace: string;
+
+  @ApiProperty()
   @IsNumber()
   price: number;
 

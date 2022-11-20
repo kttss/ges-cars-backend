@@ -41,6 +41,8 @@ export class ContratService {
       client,
       chauffeur,
       car,
+      startPlace,
+      endPlace,
     } = createContratDto;
     const contrat = new Contrat();
 
@@ -59,6 +61,8 @@ export class ContratService {
     contrat.paiement = paiement;
     contrat.price = Number(price);
     contrat.statut = statut;
+    contrat.startPlace = startPlace;
+    contrat.endPlace = endPlace;
     contrat.agence = agenceEntity;
     contrat.client = clientEntity;
     contrat.car = carEntity;
@@ -75,6 +79,7 @@ export class ContratService {
       return this.contratRepository
         .createQueryBuilder('contrat')
         .leftJoinAndSelect('contrat.client', 'client')
+        .leftJoinAndSelect('contrat.car', 'car')
         .getMany();
     } else {
       return this.findAllByAdmin(jwtDecoded.id);
@@ -88,6 +93,7 @@ export class ContratService {
     return this.contratRepository
       .createQueryBuilder('contrat')
       .leftJoinAndSelect('contrat.client', 'client')
+      .leftJoinAndSelect('contrat.car', 'car')
       .where('contrat.agenceId IN (:...ids)', { ids: [...agencesIds] })
       .getMany();
   }
@@ -114,6 +120,8 @@ export class ContratService {
       client,
       chauffeur,
       car,
+      startPlace,
+      endPlace,
     } = updateContratDto;
 
     const contrat = await this.findOne(id);
@@ -139,6 +147,8 @@ export class ContratService {
     contrat.agence = agenceEntity;
     contrat.client = clientEntity;
     contrat.car = carEntity;
+    contrat.startPlace = startPlace;
+    contrat.endPlace = endPlace;
 
     const res = await this.contratRepository.save(contrat);
 
@@ -267,6 +277,8 @@ export class ContratService {
     data.paiement = contrat.paiement;
 
     data.date_ville = contrat.client.birthday;
+    data.start_place = contrat.startPlace;
+    data.end_place = contrat.endPlace;
     return data;
     // const logo = await this.getBase64FromUrl('');
 
