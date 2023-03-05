@@ -88,4 +88,9 @@ export class Contrat {
   @IsString()
   @IsEmpty()
   file: string;
+
+  @Column()
+  @IsString()
+  @IsEmpty()
+  observation: string;
 }

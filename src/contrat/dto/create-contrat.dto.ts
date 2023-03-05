@@ -65,4 +65,14 @@ export class CreateContratDto {
   @ApiProperty()
   @IsEnum(ReservationStatutEnum)
   statut: ReservationStatutEnum;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  observation: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  file: string;
 }

@@ -133,6 +133,7 @@ export class CarService {
         .leftJoinAndSelect('car.assurance', 'assurance')
         .leftJoinAndSelect('car.vignette', 'vignette')
         .leftJoinAndSelect('car.visite', 'visite')
+        .leftJoinAndSelect('car.agence', 'agence')
         .getMany();
     } else {
       return this.findAllByAdmin(jwtDecoded.id);
@@ -146,6 +147,7 @@ export class CarService {
     const result = await this.carRepository
       .createQueryBuilder('car')
       .leftJoinAndSelect('car.carteGrise', 'cart')
+      .leftJoinAndSelect('car.agence', 'agence')
       .where('car.agenceId IN (:...ids)', { ids: [...agencesIds] })
       .getMany();
     return result;

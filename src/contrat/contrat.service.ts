@@ -43,6 +43,7 @@ export class ContratService {
       car,
       startPlace,
       endPlace,
+      observation,
     } = createContratDto;
     const contrat = new Contrat();
 
@@ -66,6 +67,7 @@ export class ContratService {
     contrat.agence = agenceEntity;
     contrat.client = clientEntity;
     contrat.car = carEntity;
+    contrat.observation = observation;
     const res = await this.contratRepository.save(contrat);
 
     return res.id;
@@ -80,6 +82,7 @@ export class ContratService {
         .createQueryBuilder('contrat')
         .leftJoinAndSelect('contrat.client', 'client')
         .leftJoinAndSelect('contrat.car', 'car')
+        .orderBy('contrat.creatAt', 'DESC')
         .getMany();
     } else {
       return this.findAllByAdmin(jwtDecoded.id);
@@ -95,6 +98,7 @@ export class ContratService {
       .leftJoinAndSelect('contrat.client', 'client')
       .leftJoinAndSelect('contrat.car', 'car')
       .where('contrat.agenceId IN (:...ids)', { ids: [...agencesIds] })
+      .orderBy('contrat.creatAt', 'DESC')
       .getMany();
   }
 
@@ -122,6 +126,8 @@ export class ContratService {
       car,
       startPlace,
       endPlace,
+      observation,
+      file,
     } = updateContratDto;
 
     const contrat = await this.findOne(id);
@@ -149,6 +155,8 @@ export class ContratService {
     contrat.car = carEntity;
     contrat.startPlace = startPlace;
     contrat.endPlace = endPlace;
+    contrat.observation = observation;
+    contrat.file = file;
 
     const res = await this.contratRepository.save(contrat);
 
@@ -238,6 +246,7 @@ export class ContratService {
       .leftJoinAndSelect('contrat.agence', 'agence')
       .leftJoinAndSelect('contrat.client', 'client')
       .leftJoinAndSelect('contrat.car', 'car')
+      .leftJoinAndSelect('contrat.chauffeur', 'chauffeur')
       .where({ id: id })
       .getOne();
     const data: any = {};
@@ -279,6 +288,8 @@ export class ContratService {
     data.date_ville = contrat.client.birthday;
     data.start_place = contrat.startPlace;
     data.end_place = contrat.endPlace;
+    data.chauffeur = contrat.chauffeur;
+    data.observation = contrat?.observation;
     return data;
     // const logo = await this.getBase64FromUrl('');
 
