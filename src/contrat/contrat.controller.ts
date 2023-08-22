@@ -7,6 +7,9 @@ import {
   Param,
   Delete,
   Request,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ContratService } from './contrat.service';
@@ -26,6 +29,25 @@ export class ContratController {
   @Get()
   findAll(@Request() req: any) {
     return this.contratService.findAll(req.headers.authorization);
+  }
+
+  @Get('paginate')
+  findAllByPaginate(
+    @Request() req: any,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('count', new DefaultValuePipe(1), ParseIntPipe) count: number,
+    @Query('search') search: string,
+    @Query('orderBy') orderBy: string,
+    @Query('order') order: 'ASC' | 'DESC',
+  ) {
+    return this.contratService.findAllByPagination(
+      req.headers.authorization,
+      page,
+      count,
+      search,
+      orderBy,
+      order,
+    );
   }
 
   @Get('pdf/:id')

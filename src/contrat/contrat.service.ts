@@ -18,6 +18,7 @@ import { CarStatutEnum } from '../car/enums/car-statut.enum';
 import { RoleEnum } from '../user/enums/role.enum';
 import { UserJwtDecoded } from '../auth/dto/user-jwt-decoded.dto';
 import { JwtService } from '@nestjs/jwt';
+import { count } from 'console';
 
 @Injectable()
 export class ContratService {
@@ -73,20 +74,135 @@ export class ContratService {
     return res.id;
   }
 
+  async findAllByPagination(
+    token: string,
+    page: number,
+    count: number,
+    search: string,
+    orderBy: string,
+    order: 'ASC' | 'DESC',
+  ) {
+    const jwtDecoded: UserJwtDecoded = this.jwt.decode(
+      token.split(' ')[1],
+    ) as UserJwtDecoded;
+    const fields = [
+      'client.lastname',
+      'client.firstname',
+      'car.matricule',
+      'car.matricule',
+      'car.marque',
+      'car.model',
+      'contrat.satrtAt',
+      'contrat.endAt',
+      'contrat.paiement',
+      'contrat.price',
+      'contrat.statut',
+    ];
+    if (jwtDecoded.role === RoleEnum.Admin) {
+      const qb = this.contratRepository
+        .createQueryBuilder('contrat')
+        .leftJoinAndSelect('contrat.client', 'client')
+        .leftJoinAndSelect('contrat.car', 'car')
+        .orderBy(orderBy ? orderBy : 'contrat.creatAt', order ? order : 'DESC')
+        .where(
+          `(${fields
+            .map(
+              (field) =>
+                `LOWER(${field})  LIKE '%${
+                  search ? search.toLowerCase() : ''
+                }%'`,
+            )
+            .join(' OR ')})`,
+        )
+        .skip(page * count)
+        .take(count);
+
+      const data = {
+        count: await qb.getCount(),
+        rows: await qb.getMany(),
+      };
+
+      return data;
+    } else {
+      return this.findAllByAdminByPaginate(
+        fields,
+        jwtDecoded.id,
+        page,
+        count,
+        search,
+        orderBy,
+        order,
+      );
+    }
+  }
+
   async findAll(token?: string) {
     const jwtDecoded: UserJwtDecoded = this.jwt.decode(
       token.split(' ')[1],
     ) as UserJwtDecoded;
     if (jwtDecoded.role === RoleEnum.Admin) {
-      return this.contratRepository
+      const qb = this.contratRepository
         .createQueryBuilder('contrat')
         .leftJoinAndSelect('contrat.client', 'client')
         .leftJoinAndSelect('contrat.car', 'car')
         .orderBy('contrat.creatAt', 'DESC')
-        .getMany();
+        .skip(1)
+        .take(10);
+
+      const data = {
+        count: await qb.getCount(),
+        rows: await qb.getMany(),
+      };
+
+      return data;
+      // return this.contratRepository
+      //   .createQueryBuilder('contrat')
+      //   .leftJoinAndSelect('contrat.client', 'client')
+      //   .leftJoinAndSelect('contrat.car', 'car')
+      //   .orderBy('contrat.creatAt', 'DESC')
+      //   .skip(1)
+      //   .take(10)
+      //   .getMany();
     } else {
       return this.findAllByAdmin(jwtDecoded.id);
     }
+  }
+
+  async findAllByAdminByPaginate(
+    fields: string[],
+    id: number,
+    page: number,
+    count: number,
+    search: string,
+    orderBy: string,
+    order: 'ASC' | 'DESC',
+  ) {
+    const agences = await this.agenceService.findAllByAdmin(id);
+    const agencesIds = agences.map((a) => a.id);
+
+    const qb = this.contratRepository
+      .createQueryBuilder('contrat')
+      .leftJoinAndSelect('contrat.client', 'client')
+      .leftJoinAndSelect('contrat.car', 'car')
+      .orderBy(orderBy ? orderBy : 'contrat.creatAt', order ? order : 'DESC')
+      .where('contrat.agenceId IN (:...ids)', { ids: [...agencesIds] })
+      .where(
+        `(${fields
+          .map(
+            (field) =>
+              `LOWER(${field})  LIKE '%${search ? search.toLowerCase() : ''}%'`,
+          )
+          .join(' OR ')})`,
+      )
+      .skip(page * count)
+      .take(count);
+
+    const data = {
+      count: await qb.getCount(),
+      rows: await qb.getMany(),
+    };
+
+    return data;
   }
 
   async findAllByAdmin(id: number) {
@@ -99,6 +215,8 @@ export class ContratService {
       .leftJoinAndSelect('contrat.car', 'car')
       .where('contrat.agenceId IN (:...ids)', { ids: [...agencesIds] })
       .orderBy('contrat.creatAt', 'DESC')
+      .skip(10)
+      .take(1)
       .getMany();
   }
 

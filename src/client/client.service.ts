@@ -101,6 +101,48 @@ export class ClientService {
     return this.clientRepository.find();
   }
 
+  async findByPaginate(
+    page: number,
+    count: number,
+    search: string,
+    orderBy: string,
+    order: 'ASC' | 'DESC',
+  ) {
+    const fields = [
+      'firstname',
+      'lastname',
+      'birthday',
+      'lieuNaissance',
+      'adresse',
+      'telephone',
+      'cin',
+      'villeCin',
+      'datePermis',
+      'villePermis',
+    ];
+
+    const qb = this.clientRepository
+      .createQueryBuilder('client')
+      .orderBy(orderBy ? orderBy : 'id', orderBy && order ? order : 'DESC')
+      .where(
+        `(${fields
+          .map(
+            (field) =>
+              `LOWER(${field})  LIKE '%${search ? search.toLowerCase() : ''}%'`,
+          )
+          .join(' OR ')})`,
+      )
+      .skip(page * count)
+      .take(count);
+
+    const data = {
+      count: await qb.getCount(),
+      rows: await qb.getMany(),
+    };
+
+    return data;
+  }
+
   async findOne(id: number) {
     return await this.clientRepository
       .createQueryBuilder('client')
