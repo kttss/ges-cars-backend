@@ -50,6 +50,11 @@ export class ContratController {
     );
   }
 
+  @Get('car/:id')
+  getReservedDays(@Param('id') id: string) {
+    return this.contratService.getReservedDays(+id);
+  }
+
   @Get('pdf/:id')
   generatePdf(@Param('id') id: string) {
     return this.contratService.generateContrat(+id);

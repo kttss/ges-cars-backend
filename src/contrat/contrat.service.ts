@@ -358,6 +358,17 @@ export class ContratService {
     };
   }
 
+  async getReservedDays(id: number) {
+    return await this.contratRepository
+      .createQueryBuilder('contrat')
+      .leftJoinAndSelect('contrat.agence', 'agence')
+      .leftJoinAndSelect('contrat.client', 'client')
+      .leftJoinAndSelect('contrat.car', 'car')
+      .leftJoinAndSelect('contrat.chauffeur', 'chauffeur')
+      .where({ car: id })
+      .getMany();
+  }
+
   async generateContrat(id: number) {
     const contrat = await this.contratRepository
       .createQueryBuilder('contrat')
