@@ -118,12 +118,12 @@ export class CarService {
     return res.id;
   }
 
-  async findAll(token: string) {
+  async findAll(token: string, dateDebut?: Date, dateFin?: Date) {
     const jwtDecoded: UserJwtDecoded = this.jwt.decode(
       token.split(' ')[1],
     ) as UserJwtDecoded;
     if (jwtDecoded.role === RoleEnum.Admin) {
-      return this.carRepository
+      const query = this.carRepository
         .createQueryBuilder('car')
         .leftJoinAndSelect('car.carteGrise', 'carteGrise')
         .leftJoinAndSelect(
@@ -134,7 +134,19 @@ export class CarService {
         .leftJoinAndSelect('car.vignette', 'vignette')
         .leftJoinAndSelect('car.visite', 'visite')
         .leftJoinAndSelect('car.agence', 'agence')
-        .getMany();
+        .leftJoinAndSelect('car.contrats', 'contrat');
+
+      if (dateDebut && dateFin) {
+        query
+          .where('contrat.satrtAt <= :dateFin', { dateFin })
+          .andWhere('contrat.backAt >= :dateDebut', { dateDebut });
+      } else if (dateDebut) {
+        query.andWhere('contrat.backAt >= :dateDebut', { dateDebut });
+      } else if (dateFin) {
+        query.andWhere('contrat.satrtAt <= :dateFin', { dateFin });
+      }
+
+      return query.getMany();
     } else {
       return this.findAllByAdmin(jwtDecoded.id);
     }

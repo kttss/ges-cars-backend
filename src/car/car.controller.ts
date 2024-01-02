@@ -8,9 +8,10 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { CarService } from './car.service';
 import { CreateCarDto } from './dto/create-car.dto';
@@ -20,6 +21,7 @@ import { UpdateCarDto } from './dto/update-car.dto';
 // @UseGuards(JwtAuthGuard)
 // @ApiBearerAuth()
 @ApiTags('cars')
+@ApiBearerAuth()
 export class CarController {
   constructor(
     private readonly carService: CarService,
@@ -32,8 +34,27 @@ export class CarController {
   }
 
   @Get()
-  findAll(@Request() req: any) {
-    return this.carService.findAll(req.headers.authorization);
+  @ApiQuery({ name: 'dateDebut', required: false })
+  @ApiQuery({ name: 'dateFin', required: false })
+  findAll(
+    @Request() req: any,
+    @Query('dateDebut') dateDebut?: string,
+    @Query('dateFin') dateFin?: string,
+  ) {
+    let dateDebutParsed: Date | undefined;
+    let dateFinParsed: Date | undefined;
+
+    if (dateDebut) {
+      dateDebutParsed = new Date(dateDebut);
+    }
+    if (dateFin) {
+      dateFinParsed = new Date(dateFin);
+    }
+    return this.carService.findAll(
+      req.headers.authorization,
+      dateDebutParsed,
+      dateFinParsed,
+    );
   }
 
   @Get('load')
