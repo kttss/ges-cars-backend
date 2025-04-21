@@ -148,21 +148,32 @@ export class CarService {
 
       return query.getMany();
     } else {
-      return this.findAllByAdmin(jwtDecoded.id);
+      return this.findAllByAdmin(jwtDecoded.id, dateDebut, dateFin);
     }
   }
 
-  async findAllByAdmin(id: number) {
+  async findAllByAdmin(id: number,dateDebut?: Date, dateFin?: Date) {
     const agences = await this.agenceService.findAllByAdmin(id);
     const agencesIds = agences.map((a) => a.id);
 
-    const result = await this.carRepository
-      .createQueryBuilder('car')
-      .leftJoinAndSelect('car.carteGrise', 'cart')
-      .leftJoinAndSelect('car.agence', 'agence')
-      .where('car.agenceId IN (:...ids)', { ids: [...agencesIds] })
-      .getMany();
-    return result;
+    const query = this.carRepository
+    .createQueryBuilder('car')
+    .leftJoinAndSelect('car.carteGrise', 'carteGrise')
+    .leftJoinAndSelect('car.agence', 'agence')
+    .leftJoinAndSelect('car.contrats', 'contrat')
+    .where('car.agenceId IN (:...ids)', { ids: [...agencesIds] });
+
+  if (dateDebut && dateFin) {
+    query
+      .andWhere('contrat.satrtAt <= :dateFin', { dateFin })
+      .andWhere('contrat.backAt >= :dateDebut', { dateDebut });
+  } else if (dateDebut) {
+    query.andWhere('contrat.backAt >= :dateDebut', { dateDebut });
+  } else if (dateFin) {
+    query.andWhere('contrat.satrtAt <= :dateFin', { dateFin });
+  }
+
+  return query.getMany();
   }
 
   async findOne(id: number) {

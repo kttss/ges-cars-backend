@@ -40,8 +40,8 @@ export class User {
   @IsString()
   password: string;
 
-  @Column()
-  @IsBoolean()
+  @Column({ default: true })
+  @IsBoolean() 
   isActive: boolean;
 
   @Column({ unique: true })

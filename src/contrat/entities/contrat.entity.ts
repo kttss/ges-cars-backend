@@ -47,7 +47,7 @@ export class Contrat {
   @IsEmpty()
   creatAt: Date;
 
-  @Column()
+  @Column({ nullable: true })
   @IsDateString()
   @IsEmpty()
   backAt: Date;
@@ -84,7 +84,7 @@ export class Contrat {
   })
   car: Car;
 
-  @Column()
+  @Column({ nullable: true })
   @IsString()
   @IsEmpty()
   file: string;

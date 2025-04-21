@@ -27,6 +27,10 @@ export class LoggerService {
   }
 
   async getAll() {
-    return await this.LoggerRepository.find();
+    return await this.LoggerRepository.find(
+      {order: {
+        createAt: 'DESC'
+      }}
+    );
   }
 }
